@@ -1,0 +1,12 @@
+{
+  "name": "1dv610_lab2",
+  "version": "1.0.0",
+  "description": "A small module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "test"
+  },
+  "author": "Robin Pettersson",
+  "license": "ISC"
+}
