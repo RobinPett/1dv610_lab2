@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "test"
+    "test": "echo \"ERROR - No test specified\" && exit 1"
   },
   "author": "Robin Pettersson",
   "license": "ISC"
