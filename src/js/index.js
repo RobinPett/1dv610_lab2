@@ -14,6 +14,9 @@ const imageFile = new File([blob], 'circle.png', {
 
 const imageLoader = new ImageLoader(imageURL)
 
+// create image element
+imageLoader.createImage()
+
 
 
 
