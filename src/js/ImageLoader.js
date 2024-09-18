@@ -3,28 +3,43 @@ export class ImageLoader {
      * Image to be loaded.
      */
     #imageURL
-    
+
+    /**
+     * Image to be loaded.
+     */
+    #imageElement
+
+
+
     constructor(image) {
         this.#imageURL = image
         console.log(this.#imageURL)
     }
 
+    /**
+     * Create an image element based on image url.
+     */
     createImage() {
         // Create image element in DOM based on image input.
 
-        let imageElement = new Image()
+        return new Promise((resolve, reject) => {
+            let imageElement = new Image()
+            this.#imageElement = imageElement
 
-        imageElement.onload = (() => {
-            console.log('Height: '+ imageElement.naturalHeight)
-            console.log('Width: ' + imageElement.naturalWidth)
-        } )
+            imageElement.src = this.#imageURL
 
-        imageElement.src = this.#imageURL
+            imageElement.onload = (() => {
+                console.log('Height: ' + imageElement.naturalHeight)
+                console.log('Width: ' + imageElement.naturalWidth)
+                resolve(imageElement)
+            })
 
-        // const imageElement = document.createElement('img')
-        // imageElement.setAttribute('src', this.#image)
-        // console.log(imageElement.clientHeight)
-        // console.log(imageElement)
+            imageElement.onerror = (error) => {
+                reject(new Error('Faile to load image'))
+            }
+        })
     }
+
+
 
 }
