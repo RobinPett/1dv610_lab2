@@ -2,25 +2,25 @@
 
 import { CreateCanvas } from "./CreateCanvas.js"
 import { ImageLoader } from "./ImageLoader.js"
-const imageURL = "https://i.ibb.co/syRwkSk/Cirkel.png"
+
+let imageURL = "https://i.ibb.co/syRwkSk/Cirkel.png"
+
+imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 
 console.log('Connected to browser')
+
+const body = document.querySelector('body')
 
 let response = await fetch(imageURL) 
 let blob = await response.blob()
 
-const imageFile = new File([blob], 'circle.png', {
-    type: 'image/png'
-})
-
 // create image element
 const imageLoader = new ImageLoader(imageURL)
-const image = imageLoader.createImage()
+const image = await imageLoader.createImage()
 
 // Create canvas element with image
 const canvas = new CreateCanvas(image)
-const canvasElement = canvas.createCanvasElement()
-    
+const rgbaValues = canvas.getRgbaValues()
 
 
-// const imageElement = document.createElement('img').setAttribute('src', image)
+console.log(rgbaValues)

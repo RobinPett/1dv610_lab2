@@ -27,6 +27,7 @@ export class ImageLoader {
             this.#imageElement = imageElement
 
             imageElement.src = this.#imageURL
+            imageElement.crossOrigin = 'Anonymouse'
 
             imageElement.onload = (() => {
                 console.log('Height: ' + imageElement.naturalHeight)
@@ -35,7 +36,7 @@ export class ImageLoader {
             })
 
             imageElement.onerror = (error) => {
-                reject(new Error('Faile to load image'))
+                reject(new Error('Failed to load image'))
             }
         })
     }
