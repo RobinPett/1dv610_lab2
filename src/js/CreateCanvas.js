@@ -29,6 +29,9 @@ export class CreateCanvas {
     createCanvasElement(image) {
         const canvas = document.createElement('canvas')
         const context = canvas.getContext('2d')
+        canvas.width = this.#image.width
+        canvas.height = this.#image.height
+
         context.drawImage(image, 0, 0)
         return context
     }
@@ -44,6 +47,8 @@ export class CreateCanvas {
 
         const rgbaValues = []
 
+        const manipulatedRgbaValues = new Uint8ClampedArray(this.#image.width * this.#image.height * 4)
+
         // Loop through rgba values in image data
         for (let i = 0; i < data.length; i += 4) {
             const red = data[i]
@@ -51,11 +56,15 @@ export class CreateCanvas {
             const blue = data[i + 2]
             const alpha = data[i + 3]
 
-            const collectedRGBAValues = { red, green, blue, alpha }
-            rgbaValues.push(collectedRGBAValues)
+            manipulatedRgbaValues[i] = red
+            manipulatedRgbaValues[i + 1] = green 
+            manipulatedRgbaValues[i + 2] = blue
+            manipulatedRgbaValues[i + 3] = alpha
         }
 
-        return rgbaValues
+        console.log(manipulatedRgbaValues)
+
+        return manipulatedRgbaValues
     }
 
     getRgbaValues() {

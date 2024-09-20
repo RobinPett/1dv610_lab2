@@ -18,9 +18,26 @@ let blob = await response.blob()
 const imageLoader = new ImageLoader(imageURL)
 const image = await imageLoader.createImage()
 
+console.log(image.width, image.height)
+
 // Create canvas element with image
 const canvas = new CreateCanvas(image)
 const rgbaValues = canvas.getRgbaValues()
 
-
 console.log(rgbaValues)
+
+const canvasElement = document.createElement('canvas')
+canvasElement.width = image.width
+canvasElement.height = image.height
+canvasElement.style.overflow = 'visible'
+canvasElement.style.overflowClipMargin = 'unset'
+
+
+const context = canvasElement.getContext('2d')
+const imageData = new ImageData(rgbaValues, image.width, image.height)
+
+console.log(imageData)
+
+context.putImageData(imageData, 0, 0)
+
+body.appendChild(canvasElement)
