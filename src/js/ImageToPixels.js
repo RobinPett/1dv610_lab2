@@ -68,7 +68,7 @@ export class ImageToPixels {
             console.log(imageElement)
 
             imageElement.src = this.#imageURL
-            // imageElement.crossOrigin = 'Anonymous' // To allow loading images from cross origin sources
+            imageElement.crossOrigin = 'Anonymous' // To allow loading images from cross origin sources
 
             imageElement.onload = (() => {
                 console.log('Image loaded')
@@ -103,7 +103,8 @@ export class ImageToPixels {
         const imageData = context.getImageData(0, 0, this.#imageWidthInPx, this.#imageHeightInPx)
         const data = imageData.data
 
-        const extractedRgbaValues = new Uint8ClampedArray(this.#imageWidthInPx * this.#imageHeightInPx * 4)
+        // const extractedRgbaValues = new Uint8ClampedArray(this.#imageWidthInPx * this.#imageHeightInPx)
+        const extractedRgbaValues = []
 
         // Loop through rgba values in image data
         for (let i = 0; i < data.length; i += 4) {
@@ -112,14 +113,9 @@ export class ImageToPixels {
             const blue = data[i + 2]
             const alpha = data[i + 3]
 
-            // const pixel = [red, green, blue, alpha]
-            // rawRgbaValues.push(pixel)
-
-            // Move rgba values to new array
-            extractedRgbaValues[i] = red
-            extractedRgbaValues[i + 1] = green
-            extractedRgbaValues[i + 2] = blue
-            extractedRgbaValues[i + 3] = alpha
+            // Seperate pixel values and move to new array
+            const pixel = [red, green, blue, alpha]
+            extractedRgbaValues[i] = pixel
         }
         return extractedRgbaValues
     }

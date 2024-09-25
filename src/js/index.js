@@ -1,7 +1,5 @@
 // Main module file
-
-import { CreateCanvas } from "./CreateCanvas.js"
-import { ImageLoader } from "./ImageLoader.js"
+import { ColorPaletteFromPixels } from "./ColorPaletteFromPixels.js"
 import { ImageToPixels } from "./ImageToPixels.js"
 
 let imageURL = "https://i.ibb.co/syRwkSk/Cirkel.png"
@@ -19,7 +17,9 @@ let blob = await response.blob()
 const imageToPixels = new ImageToPixels(imageURL)
 const rgbaValues = await imageToPixels.getRgbaValues()
 
-console.log(rgbaValues)
+const numberofColorsInColorPalette = 3
+
+const colorPaletteFromPixels = new ColorPaletteFromPixels(rgbaValues, numberofColorsInColorPalette)
 
 
 
@@ -32,16 +32,16 @@ console.log(rgbaValues)
 
 // TEST RGBA -----------------------------------------------------------------------------
 // Build canvas to test values
-const imageWidthinPx = await imageToPixels.getImageWidth()
-const imageHeightInPx = await imageToPixels.getImageHeight()
+// const imageWidthinPx = await imageToPixels.getImageWidth()
+// const imageHeightInPx = await imageToPixels.getImageHeight()
 
-// Build image from rgba values
-const canvasElement = document.createElement('canvas')
-const context = canvasElement.getContext('2d')
-canvasElement.height = imageHeightInPx
-canvasElement.width = imageWidthinPx
-const imageData = new ImageData(rgbaValues, imageWidthinPx, imageHeightInPx)
+// // Build image from rgba values
+// const canvasElement = document.createElement('canvas')
+// const context = canvasElement.getContext('2d')
+// canvasElement.height = imageHeightInPx
+// canvasElement.width = imageWidthinPx
+// const imageData = new ImageData(rgbaValues, imageWidthinPx, imageHeightInPx)
 
-context.putImageData(imageData, 0, 0)
+// context.putImageData(imageData, 0, 0)
 
-body.appendChild(canvasElement)
+// body.appendChild(canvasElement)
