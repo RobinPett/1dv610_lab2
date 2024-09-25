@@ -6,6 +6,8 @@ let imageURL = "https://i.ibb.co/syRwkSk/Cirkel.png"
 
 imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 
+imageURL = 'https://i.ibb.co/FhZVb9q/test.jpg'
+
 console.log('Connected to browser')
 
 const body = document.querySelector('body')
