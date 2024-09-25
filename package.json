@@ -3,10 +3,34 @@
   "version": "1.0.0",
   "description": "A small module",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"ERROR - No test specified\" && exit 1"
+    "start": "node src/js/index.js",
+    "test": "jest --detectOpenHandles"
   },
   "author": "Robin Pettersson",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "^7.25.4",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-puppeteer": "^10.1.1"
+  },
+  "jest": {
+    "preset": "jest-puppeteer",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "verbose": true,
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ]
+  }
 }
