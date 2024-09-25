@@ -17,10 +17,23 @@ let blob = await response.blob()
 
 // extract rgba values from image
 const imageToPixels = new ImageToPixels(imageURL)
-const imageWidthinPx = await imageToPixels.getImageWidth()
-const imageHeightInPx = await imageToPixels.getImageHeight()
 const rgbaValues = await imageToPixels.getRgbaValues()
 
+console.log(rgbaValues)
+
+
+
+
+
+
+
+
+
+
+// TEST RGBA -----------------------------------------------------------------------------
+// Build canvas to test values
+const imageWidthinPx = await imageToPixels.getImageWidth()
+const imageHeightInPx = await imageToPixels.getImageHeight()
 
 // Build image from rgba values
 const canvasElement = document.createElement('canvas')
@@ -28,8 +41,6 @@ const context = canvasElement.getContext('2d')
 canvasElement.height = imageHeightInPx
 canvasElement.width = imageWidthinPx
 const imageData = new ImageData(rgbaValues, imageWidthinPx, imageHeightInPx)
-
-console.log(imageData)
 
 context.putImageData(imageData, 0, 0)
 

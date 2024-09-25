@@ -48,6 +48,9 @@ export class ImageToPixels {
 
     async startImageExtraction() {
         this.#imageElement = await this.createImage(this.#imageURL)
+        this.#imageWidthInPx = this.#imageElement.width
+        this.#imageHeightInPx = this.#imageElement.height
+
         this.#canvasElement = this.createCanvasElement(this.#imageElement)
         this.#rgbaValues = this.extractRgbaValues(this.#canvasElement)
     }
@@ -56,32 +59,30 @@ export class ImageToPixels {
      * Create an image element based on image url.
      */
     createImage() {
-        // Create image element in DOM based on image input.
         console.log('Creates image element')
 
         return new Promise((resolve, reject) => {
-            let imageElement = new Image()
+            let imageElement = document.createElement('img')
             this.#imageElement = imageElement
 
+            console.log(imageElement)
+
             imageElement.src = this.#imageURL
-            imageElement.crossOrigin = 'Anonymouse' // To allow loading images from cross origin sources
+            // imageElement.crossOrigin = 'Anonymous' // To allow loading images from cross origin sources
 
             imageElement.onload = (() => {
                 console.log('Image loaded')
-                this.#imageHeightInPx = imageElement.height
-                this.#imageWidthInPx = imageElement.width
                 resolve(imageElement)
             })
 
             imageElement.onerror = (error) => {
-                reject(new Error('Failed to load image'))
+                reject(new Error('Failed to load image' + error))
             }
         })
     }
 
     createCanvasElement(imageElement) {
         console.log('Creating canvas')
-
         const canvas = document.createElement('canvas')
         const context = canvas.getContext('2d')
         canvas.width = this.#imageWidthInPx
@@ -102,7 +103,7 @@ export class ImageToPixels {
         const imageData = context.getImageData(0, 0, this.#imageWidthInPx, this.#imageHeightInPx)
         const data = imageData.data
 
-        const rawRgbaValues = new Uint8ClampedArray(this.#imageWidthInPx * this.#imageHeightInPx * 4)
+        const extractedRgbaValues = new Uint8ClampedArray(this.#imageWidthInPx * this.#imageHeightInPx * 4)
 
         // Loop through rgba values in image data
         for (let i = 0; i < data.length; i += 4) {
@@ -111,29 +112,34 @@ export class ImageToPixels {
             const blue = data[i + 2]
             const alpha = data[i + 3]
 
-            // Move rgba values to new array
-            rawRgbaValues[i] = red
-            rawRgbaValues[i + 1] = green
-            rawRgbaValues[i + 2] = blue
-            rawRgbaValues[i + 3] = alpha
-        }
+            // const pixel = [red, green, blue, alpha]
+            // rawRgbaValues.push(pixel)
 
-        console.log(rawRgbaValues)
-        return rawRgbaValues
+            // Move rgba values to new array
+            extractedRgbaValues[i] = red
+            extractedRgbaValues[i + 1] = green
+            extractedRgbaValues[i + 2] = blue
+            extractedRgbaValues[i + 3] = alpha
+        }
+        return extractedRgbaValues
     }
 
     async getRgbaValues() {
         await this.#imageLoadPromise
-        return this.#rgbaValues
+        return await this.#rgbaValues
     }
 
     async getImageWidth() {
         await this.#imageLoadPromise
-        return this.#imageWidthInPx
+        return await this.#imageWidthInPx
     }
 
     async getImageHeight() {
         await this.#imageLoadPromise
-        return this.#imageHeightInPx
+        return await this.#imageHeightInPx
+    }
+
+    getTest() {
+        return 'Test ok'
     }
 }
