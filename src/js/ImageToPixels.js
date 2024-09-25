@@ -115,7 +115,7 @@ export class ImageToPixels {
 
             // Seperate pixel values and move to new array
             const pixel = [red, green, blue, alpha]
-            extractedRgbaValues[i] = pixel
+            extractedRgbaValues.push(pixel)
         }
         return extractedRgbaValues
     }
