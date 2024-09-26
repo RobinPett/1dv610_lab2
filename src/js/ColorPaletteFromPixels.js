@@ -33,7 +33,7 @@ export class ColorPaletteFromPixels {
     /**
      * Using K-Clustering algorithm to find dominant clusters of similar colors.
      */
-    findDominantColors () {
+    findDominantColors() {
         // Create Color clusters based on amountOfColorsToExtract
         this.#colorClusters = this.createColorClusters()
         console.log(this.#colorClusters)
@@ -42,14 +42,22 @@ export class ColorPaletteFromPixels {
         this.#referencePixels = this.getReferencePixels()
         console.log('Reference pixels: ' + this.#referencePixels)
 
+        // Cluster together pixel to reference pixels
+        this.addToColorCluster()
+
+
+
         // LOOP FROM HERE ----------------------------------------------------
-        let counter = 1 // replace with convergence check instead
+        let counter = 100 // replace with convergence check instead
         do {
             this.#referencePixels = this.getUpdatedReferencePixels()
-            // console.log('Updated reference pixels: ' + updatedReferencePixels)
+            console.log('Updated reference pixels: ' + this.#referencePixels)
 
             this.clearClusters()
             // console.log(counter)
+
+            // Create Color clusters based on amountOfColorsToExtract
+            this.#colorClusters = this.createColorClusters()
 
             // Cluster together pixel to reference pixels
             this.addToColorCluster()
@@ -58,29 +66,30 @@ export class ColorPaletteFromPixels {
             counter--
         } while (counter !== 0)
 
+        console.log('Color clusters before drawing palette')
         console.log(this.#colorClusters)
 
         for (let i = 0; i < this.#colorClusters.length; i++) {
 
             const color = this.#colorClusters[i][0]
             console.log('Color: ' + color)
-    
+
             const red = color[0]
             const green = color[1]
             const blue = color[2]
             const alpha = color[3]
-    
+
             console.log(`Extracted colors: rgba(${red}, ${green}, ${blue}, ${alpha})`)
-    
+
             const body = document.querySelector('body')
-    
+
             const div = document.createElement('div')
             div.style.width = '100px'
             div.style.height = '100px'
             div.style.backgroundColor = `rgba(${red}, ${green}, ${blue}, ${alpha})`
-    
+
             body.appendChild(div)
-            
+
         }
     }
 
@@ -146,7 +155,7 @@ export class ColorPaletteFromPixels {
         const greenCalculation = Math.pow((green - referenceGreen), powerOfTwo)
         const blueCalculation = Math.pow((blue - referenceBlue), powerOfTwo)
         const alphaCalculation = Math.pow((alpha - referenceAlpha), powerOfTwo)
-        
+
         const distanceCalculation = Math.sqrt((redCalculation + greenCalculation + blueCalculation + alphaCalculation))
 
         return distanceCalculation
@@ -155,27 +164,28 @@ export class ColorPaletteFromPixels {
     getUpdatedReferencePixels() {
         const updatedReferencePixels = []
 
-        // Initialize sums
-        let redSum = 0
-        let greenSum = 0
-        let blueSum = 0
-        let alphaSum = 0
-
         // Loop through each cluster and then each pixel in cluster
         this.#colorClusters.forEach(colorCluster => {
-            colorCluster.forEach(pixel =>  {
+            const clusterLength = colorCluster.length
+
+            // Initialize sums
+            let redSum = 0
+            let greenSum = 0
+            let blueSum = 0
+            let alphaSum = 0
+
+            colorCluster.forEach(pixel => {
                 redSum += pixel[0]
                 greenSum += pixel[1]
                 blueSum += pixel[2]
                 alphaSum += pixel[3]
             })
 
-            const clusterLength = colorCluster.length
+            const redMean = Math.max(0, Math.min(255, redSum / clusterLength))
+            const greenMean = Math.max(0, Math.min(255, greenSum / clusterLength))
+            const blueMean = Math.max(0, Math.min(255, blueSum / clusterLength))
+            const alphaMean = Math.max(0, Math.min(255, alphaSum / clusterLength))
 
-            const redMean = redSum / clusterLength
-            const greenMean = greenSum / clusterLength
-            const blueMean = blueSum / clusterLength
-            const alphaMean = alphaSum / clusterLength
 
             const newReferencePixel = [redMean, greenMean, blueMean, alphaMean]
             updatedReferencePixels.push(newReferencePixel)
