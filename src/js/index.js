@@ -6,11 +6,16 @@ let imageURL = "https://i.ibb.co/syRwkSk/Cirkel.png"
 
 imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 
-imageURL = 'https://i.ibb.co/FhZVb9q/test.jpg'
+// imageURL = 'https://i.ibb.co/FhZVb9q/test.jpg' // Red green and blue test image
 
 console.log('Connected to browser')
 
 const body = document.querySelector('body')
+const img = document.createElement('img')
+img.src = imageURL
+img.style.width = 500
+
+body.appendChild(img)
 
 let response = await fetch(imageURL) 
 let blob = await response.blob()
@@ -19,7 +24,7 @@ let blob = await response.blob()
 const imageToPixels = new ImageToPixels(imageURL)
 const rgbaValues = await imageToPixels.getRgbaValues()
 
-const numberofColorsInColorPalette = 3
+const numberofColorsInColorPalette = 5
 
 const colorPaletteFromPixels = new ColorPaletteFromPixels(rgbaValues, numberofColorsInColorPalette)
 
