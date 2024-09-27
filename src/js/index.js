@@ -26,7 +26,25 @@ const rgbaValues = await imageToPixels.getRgbaValues()
 
 const numberofColorsInColorPalette = 3
 
+const redPixel = [255, 0, 0, 255]
+const greenPixel = [0, 255, 0, 255]
+const bluePixel = [0, 0, 255, 255]
+
+const pixels = [ redPixel, greenPixel, bluePixel ]
+
+// const rgbaValues = []
+
+for (let i = 0; i < 100; i++) {
+    pixels.forEach(pixel => {
+        rgbaValues.push(pixel)
+    })
+}
+
+console.log(rgbaValues)
+
 const colorPaletteFromPixels = new ColorPaletteFromPixels(rgbaValues, numberofColorsInColorPalette)
+
+colorPaletteFromPixels.get
 
 
 

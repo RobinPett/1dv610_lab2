@@ -45,6 +45,7 @@ export class ColorPaletteFromPixels {
 
         // Find K random pixels
         this.#referencePixels = this.getReferencePixels()
+        console.log('Initial reference pixels: ' + this.#referencePixels)
 
         // Cluster together pixel to reference pixels
         this.addToColorCluster()
@@ -75,30 +76,6 @@ export class ColorPaletteFromPixels {
             // Cluster together pixel to reference pixels
             this.addToColorCluster()
         } while (!convergence && iterations < maxIterations)
-
-        console.log('Color clusters before drawing palette')
-        console.log(this.#colorClusters)
-
-        for (let i = 0; i < this.#colorClusters.length; i++) {
-            const color = this.#colorClusters[i][0]
-            console.log('Color: ' + color)
-
-            const red = color[0]
-            const green = color[1]
-            const blue = color[2]
-            const alpha = color[3]
-
-            console.log(`Extracted colors: rgba(${red}, ${green}, ${blue}, ${alpha})`)
-
-            const body = document.querySelector('body')
-            const div = document.createElement('div')
-            div.style.width = '100px'
-            div.style.height = '100px'
-            div.style.backgroundColor = `rgba(${red}, ${green}, ${blue}, ${alpha})`
-
-            body.appendChild(div)
-
-        }
     }
 
     createColorClusters() {
@@ -117,12 +94,28 @@ export class ColorPaletteFromPixels {
      */
     getReferencePixels() {
         const referencePixels = []
+        const amountOfPixels = this.#rgbaValues.length
 
-        for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
-            const amountOfPixels = this.#rgbaValues.length
-            const randomPixel = Math.floor(Math.random() * amountOfPixels)
-            const chosenReferencePixel = this.#rgbaValues[randomPixel]
-            referencePixels.push(chosenReferencePixel)
+        // Get first pixel randomly
+        const randomPixelIndex = Math.floor(Math.random() * amountOfPixels)
+        const randomPixel = this.#rgbaValues[randomPixelIndex]
+        referencePixels.push(randomPixel)
+
+        for (let i = 1; i < this.#numberOfColorsToExtract; i++) {
+            let maxDistanceOfPixel = 0
+            let pixelFurthestAway = null
+
+            // Get rest of pixels with k-mean++ logic - Calculated distance to others for better spread
+            this.#rgbaValues.forEach((pixel) => {
+                const pixelDistanceMoved = referencePixels.map((referencePixel) => this.calculateDistanceToReferencePixel(pixel, referencePixel))
+                const minimumDistanceMoved = Math.min(...pixelDistanceMoved)
+
+                if (minimumDistanceMoved > maxDistanceOfPixel) {
+                    maxDistanceOfPixel = minimumDistanceMoved
+                    pixelFurthestAway = pixel
+                }
+            })
+            referencePixels.push(pixelFurthestAway)
         }
         return referencePixels
     }
@@ -224,5 +217,29 @@ export class ColorPaletteFromPixels {
         console.log('Total distance moved: ' + totalDistanceMoved + ' threshold: ' + (threshold))
 
         return totalDistanceMoved < threshold
+    }
+
+    getDominantColors() {
+        console.log('Color clusters before drawing palette')
+        console.log(this.#colorClusters)
+
+        const extractedColors = []
+
+        for (let i = 0; i < this.#colorClusters.length; i++) {
+            const color = this.#colorClusters[i][0]
+            console.log('Color: ' + color)
+
+            const red = color[0]
+            const green = color[1]
+            const blue = color[2]
+            const alpha = color[3]
+
+            console.log(`Extracted colors: rgba(${red}, ${green}, ${blue}, ${alpha})`)
+
+            const extractedColor = { red, green, blue, alpha }
+            extractedColors.push(extractedColor)
+        }
+
+        return extractedColors
     }
 }
