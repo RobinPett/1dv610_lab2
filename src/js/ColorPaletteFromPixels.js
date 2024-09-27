@@ -33,6 +33,7 @@ export class ColorPaletteFromPixels {
     #colorClusters
 
     constructor(rgbaValues, numberOfColorsToExtract) {
+        this.#rgbaValues = rgbaValues
         this.#numberOfColorsToExtract = numberOfColorsToExtract
         this.findDominantColors()
     }
@@ -84,14 +85,8 @@ export class ColorPaletteFromPixels {
 
             // Get rest of pixels with k-mean++ logic - Calculated distance to others for better spread
             this.#rgbaValues.forEach((pixel) => {
-                console.log('Reference pixels collection: ')
-                console.log(referencePixels)
                 const pixelDistanceMoved = referencePixels.map((referencePixel) => this.calculateDistanceToReferencePixel(pixel, referencePixel))
                 const minimumDistanceMoved = Math.min(...pixelDistanceMoved)
-
-                console.log('pixel distance moved: ' + pixelDistanceMoved)
-                console.log('minimum distance moved: ' + minimumDistanceMoved)
-
                 if (minimumDistanceMoved > maxDistanceOfPixel) {
                     maxDistanceOfPixel = minimumDistanceMoved
                     pixelFurthestAway = pixel
@@ -123,9 +118,6 @@ export class ColorPaletteFromPixels {
     }
 
     calculateDistanceToReferencePixel(pixel, referencePixel) {
-        console.log('Pixel ' + pixel)
-        console.log('Reference Pixel ' + referencePixel)
-
         const red = pixel[0]
         const green = pixel[1]
         const blue = pixel[2]
@@ -193,14 +185,10 @@ export class ColorPaletteFromPixels {
 
         updatedReferencePixels.forEach((pixel, index) => {
             const distance = this.calculateDistanceToReferencePixel(pixel, referencePixels[index])
-            console.log('Pixel distance moved: ' + distance)
             totalDistanceMoved += distance
 
             if (distance <= threshold) return false
         })
-
-        console.log('Total distance moved: ' + totalDistanceMoved + ' threshold: ' + (threshold))
-
         return totalDistanceMoved < threshold
     }
 
@@ -209,7 +197,6 @@ export class ColorPaletteFromPixels {
         let iterations = 0
         const maxIterations = 1000
         do {
-            console.log(iterations)
             iterations++
             const updatedReferencePixels = this.getUpdatedReferencePixels()
 
@@ -230,21 +217,17 @@ export class ColorPaletteFromPixels {
     }
 
     getDominantColors() {
-        console.log('Color clusters before drawing palette')
-        console.log(this.#colorClusters)
-
         const extractedColors = []
 
         for (let i = 0; i < this.#colorClusters.length; i++) {
             const color = this.#colorClusters[i][0]
-            console.log('Color: ' + color)
 
             const red = color[0]
             const green = color[1]
             const blue = color[2]
             const alpha = color[3]
 
-            console.log(`Extracted colors: rgba(${red}, ${green}, ${blue}, ${alpha})`)
+            // console.log(`Extracted colors: rgba(${red}, ${green}, ${blue}, ${alpha})`)
 
             const extractedColor = { red, green, blue, alpha }
             extractedColors.push(extractedColor)
