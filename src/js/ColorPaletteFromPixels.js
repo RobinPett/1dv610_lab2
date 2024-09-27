@@ -2,6 +2,8 @@
 // 
 // Rewrite for loops as forEach
 
+// DOn't allow too small sets of data of pixels to be analysed
+
 
 
 
@@ -31,7 +33,6 @@ export class ColorPaletteFromPixels {
     #colorClusters
 
     constructor(rgbaValues, numberOfColorsToExtract) {
-        this.#rgbaValues = rgbaValues
         this.#numberOfColorsToExtract = numberOfColorsToExtract
         this.findDominantColors()
     }
@@ -50,32 +51,8 @@ export class ColorPaletteFromPixels {
         // Cluster together pixel to reference pixels
         this.addToColorCluster()
 
-
-
-        // LOOP FROM HERE ----------------------------------------------------
-        // let counter = 100 // replace with convergence check instead
-        let convergence = false
-        let iterations = 0
-        const maxIterations = 1000
-        do {
-            console.log(iterations)
-            iterations++
-            const updatedReferencePixels = this.getUpdatedReferencePixels()
-
-            // Check if pixels don't change no more - Convergence
-            convergence = this.checkConvergence(updatedReferencePixels, this.#referencePixels)
-
-            this.#referencePixels = updatedReferencePixels
-
-
-            this.clearClusters()
-
-            // Create Color clusters based on amountOfColorsToExtract
-            this.#colorClusters = this.createColorClusters()
-
-            // Cluster together pixel to reference pixels
-            this.addToColorCluster()
-        } while (!convergence && iterations < maxIterations)
+        // Loops over pixels and gets more accurate colors from image
+        this.iterateOverPixels()
     }
 
     createColorClusters() {
@@ -107,8 +84,13 @@ export class ColorPaletteFromPixels {
 
             // Get rest of pixels with k-mean++ logic - Calculated distance to others for better spread
             this.#rgbaValues.forEach((pixel) => {
+                console.log('Reference pixels collection: ')
+                console.log(referencePixels)
                 const pixelDistanceMoved = referencePixels.map((referencePixel) => this.calculateDistanceToReferencePixel(pixel, referencePixel))
                 const minimumDistanceMoved = Math.min(...pixelDistanceMoved)
+
+                console.log('pixel distance moved: ' + pixelDistanceMoved)
+                console.log('minimum distance moved: ' + minimumDistanceMoved)
 
                 if (minimumDistanceMoved > maxDistanceOfPixel) {
                     maxDistanceOfPixel = minimumDistanceMoved
@@ -141,6 +123,9 @@ export class ColorPaletteFromPixels {
     }
 
     calculateDistanceToReferencePixel(pixel, referencePixel) {
+        console.log('Pixel ' + pixel)
+        console.log('Reference Pixel ' + referencePixel)
+
         const red = pixel[0]
         const green = pixel[1]
         const blue = pixel[2]
@@ -204,7 +189,7 @@ export class ColorPaletteFromPixels {
     checkConvergence(updatedReferencePixels, referencePixels) {
         const meassuredDistances = []
         let totalDistanceMoved = 0
-        const threshold = 0.1
+        const threshold = 0.001
 
         updatedReferencePixels.forEach((pixel, index) => {
             const distance = this.calculateDistanceToReferencePixel(pixel, referencePixels[index])
@@ -217,6 +202,31 @@ export class ColorPaletteFromPixels {
         console.log('Total distance moved: ' + totalDistanceMoved + ' threshold: ' + (threshold))
 
         return totalDistanceMoved < threshold
+    }
+
+    iterateOverPixels() {
+        let convergence = false
+        let iterations = 0
+        const maxIterations = 1000
+        do {
+            console.log(iterations)
+            iterations++
+            const updatedReferencePixels = this.getUpdatedReferencePixels()
+
+            // Check if pixels don't change no more - Convergence
+            convergence = this.checkConvergence(updatedReferencePixels, this.#referencePixels)
+
+            this.#referencePixels = updatedReferencePixels
+
+
+            this.clearClusters()
+
+            // Create Color clusters based on amountOfColorsToExtract
+            this.#colorClusters = this.createColorClusters()
+
+            // Cluster together pixel to reference pixels
+            this.addToColorCluster()
+        } while (!convergence && iterations < maxIterations)
     }
 
     getDominantColors() {
