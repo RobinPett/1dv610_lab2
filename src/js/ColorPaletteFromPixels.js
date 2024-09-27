@@ -1,3 +1,9 @@
+// TODO
+// 
+// Rewrite for loops as forEach
+
+
+
 
 /**
  * Extract dominant colors from a set of pixels.
@@ -36,11 +42,9 @@ export class ColorPaletteFromPixels {
     findDominantColors() {
         // Create Color clusters based on amountOfColorsToExtract
         this.#colorClusters = this.createColorClusters()
-        console.log(this.#colorClusters)
 
         // Find K random pixels
         this.#referencePixels = this.getReferencePixels()
-        console.log('Reference pixels: ' + this.#referencePixels)
 
         // Cluster together pixel to reference pixels
         this.addToColorCluster()
@@ -48,29 +52,34 @@ export class ColorPaletteFromPixels {
 
 
         // LOOP FROM HERE ----------------------------------------------------
-        let counter = 100 // replace with convergence check instead
+        // let counter = 100 // replace with convergence check instead
+        let convergence = false
+        let iterations = 0
+        const maxIterations = 1000
         do {
-            this.#referencePixels = this.getUpdatedReferencePixels()
-            console.log('Updated reference pixels: ' + this.#referencePixels)
+            console.log(iterations)
+            iterations++
+            const updatedReferencePixels = this.getUpdatedReferencePixels()
+
+            // Check if pixels don't change no more - Convergence
+            convergence = this.checkConvergence(updatedReferencePixels, this.#referencePixels)
+
+            this.#referencePixels = updatedReferencePixels
+
 
             this.clearClusters()
-            // console.log(counter)
 
             // Create Color clusters based on amountOfColorsToExtract
             this.#colorClusters = this.createColorClusters()
 
             // Cluster together pixel to reference pixels
             this.addToColorCluster()
-            // console.log(this.#colorClusters)
-
-            counter--
-        } while (counter !== 0)
+        } while (!convergence && iterations < maxIterations)
 
         console.log('Color clusters before drawing palette')
         console.log(this.#colorClusters)
 
         for (let i = 0; i < this.#colorClusters.length; i++) {
-
             const color = this.#colorClusters[i][0]
             console.log('Color: ' + color)
 
@@ -82,7 +91,6 @@ export class ColorPaletteFromPixels {
             console.log(`Extracted colors: rgba(${red}, ${green}, ${blue}, ${alpha})`)
 
             const body = document.querySelector('body')
-
             const div = document.createElement('div')
             div.style.width = '100px'
             div.style.height = '100px'
@@ -199,7 +207,22 @@ export class ColorPaletteFromPixels {
             cluster.length = 0
         })
     }
+
+    checkConvergence(updatedReferencePixels, referencePixels) {
+        const meassuredDistances = []
+        let totalDistanceMoved = 0
+        const threshold = 0.1
+
+        updatedReferencePixels.forEach((pixel, index) => {
+            const distance = this.calculateDistanceToReferencePixel(pixel, referencePixels[index])
+            console.log('Pixel distance moved: ' + distance)
+            totalDistanceMoved += distance
+
+            if (distance <= threshold) return false
+        })
+
+        console.log('Total distance moved: ' + totalDistanceMoved + ' threshold: ' + (threshold))
+
+        return totalDistanceMoved < threshold
+    }
 }
-
-
-// Rewrite for loops as forEach
