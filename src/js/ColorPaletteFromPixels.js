@@ -32,6 +32,11 @@ export class ColorPaletteFromPixels {
      */
     #colorClusters
 
+    /**
+     * Frequent colors
+     */
+    #colorFrequencies
+
     constructor(rgbaValues, numberOfColorsToExtract) {
         this.#rgbaValues = rgbaValues
         this.#numberOfColorsToExtract = numberOfColorsToExtract
@@ -44,8 +49,6 @@ export class ColorPaletteFromPixels {
     findDominantColors() {
         // Create Color clusters based on amountOfColorsToExtract
         this.#colorClusters = this.createColorClusters()
-
-        const colorFrequencies = this.getColorFrequencies()
 
         // Find K random pixels
         // this.#referencePixels = this.getReferencePixels()
@@ -74,7 +77,19 @@ export class ColorPaletteFromPixels {
 
         this.#rgbaValues.forEach((pixel) => {
             let foundSimilarPixel = false
-            
+
+            const [red, green, blue, alpha] = pixel
+
+            // Extract luminance == brightness
+            // Reference = https://en.wikipedia.org/wiki/Luma_(video)
+            const pixelBrightness = (red * 0.299 + green * 0.587 + blue * 0.114) / 255
+
+            // Calculate saturation
+            const pixelSaturation = (Math.max(red, green, blue) - Math.min(red, green, blue)) / 255
+
+            if (pixelBrightness < 0.5 || pixelSaturation < 0.5) {
+                return
+            }
 
             frequentPixels.forEach(pixelGroup => {
                 const frequentPixel = pixelGroup.pixel
@@ -92,9 +107,7 @@ export class ColorPaletteFromPixels {
         })
 
         const sortedFrequentPixels = frequentPixels.sort((a, b) => b.count - a.count)
-
-        console.log('Frequent pixels: ')
-        console.log(sortedFrequentPixels)
+        return sortedFrequentPixels
     }
 
     /**
@@ -131,35 +144,18 @@ export class ColorPaletteFromPixels {
 
     getInitialReferencePixels() {
         const referencePixels = []
-        const amountOfPixels = this.#rgbaValues.length
 
         // Get first pixels based on frequency of colors
-        this.#rgbaValues.forEach((pixel) => {
-            const red = pixel[0]
-            const green = pixel[1]
-            const blue = pixel[2]
-            const alpha = pixel[3]
+        const colorFrequencies = this.getColorFrequencies()
 
-            if (referencePixels.length) {
+        console.log('Color frequencies: ')
+        console.log(colorFrequencies)
 
-            }
-        })
-
-        for (let i = 1; i < this.#numberOfColorsToExtract; i++) {
-            let maxDistanceOfPixel = 0
-            let pixelFurthestAway = null
-
-            // Get rest of pixels with k-mean++ logic - Calculated distance to others for better spread
-            this.#rgbaValues.forEach((pixel) => {
-                const pixelDistanceMoved = referencePixels.map((referencePixel) => this.calculateDistanceToReferencePixel(pixel, referencePixel))
-                const minimumDistanceMoved = Math.min(...pixelDistanceMoved)
-                if (minimumDistanceMoved > maxDistanceOfPixel) {
-                    maxDistanceOfPixel = minimumDistanceMoved
-                    pixelFurthestAway = pixel
-                }
-            })
-            referencePixels.push(pixelFurthestAway)
+        // Extract most frequent colors as initial 
+        for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
+            referencePixels.push(colorFrequencies[i].pixel)
         }
+
         return referencePixels
     }
 
@@ -167,6 +163,7 @@ export class ColorPaletteFromPixels {
         for (let i = 0; i < this.#rgbaValues.length; i++) {
             const pixel = this.#rgbaValues[i] // A Pixel is an array of rgba values - [r, g, b, a]
             const meassuredDistances = []
+            const threshold = 30
 
             // Calculate distance between pixel and reference pixels
             for (let i = 0; i < this.#referencePixels.length; i++) {
@@ -179,7 +176,10 @@ export class ColorPaletteFromPixels {
             const smalletNumber = Math.min(...meassuredDistances)
             const closestIndex = meassuredDistances.indexOf(smalletNumber)
 
-            this.#colorClusters[closestIndex].push(pixel)
+            if (smalletNumber < threshold) {
+                this.#colorClusters[closestIndex].push(pixel)
+            }
+            
         }
     }
 
