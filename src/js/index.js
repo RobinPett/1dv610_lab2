@@ -28,7 +28,7 @@ let blob = await response.blob()
 const imageToPixels = new ImageToPixels(imageURL)
 const rgbaValues = await imageToPixels.getRgbaValues()
 
-const numberofColorsInColorPalette = 3
+const numberofColorsInColorPalette = 5
 
 const redPixel = [255, 0, 0, 255]
 const greenPixel = [0, 255, 0, 255]
@@ -44,13 +44,13 @@ for (let i = 0; i < 100; i++) {
     })
 }
 
-console.log(rgbaValues)
+// console.log(rgbaValues)
 
 const colorPaletteFromPixels = new ColorPaletteFromPixels(rgbaValues, numberofColorsInColorPalette)
 
 const extractedColors = colorPaletteFromPixels.getDominantColors()
 
-console.log(extractedColors)
+// console.log(extractedColors)
 
 // Create divs with color info extracted
 extractedColors.forEach((color) => {

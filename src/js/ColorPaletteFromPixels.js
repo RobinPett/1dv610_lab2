@@ -45,8 +45,11 @@ export class ColorPaletteFromPixels {
         // Create Color clusters based on amountOfColorsToExtract
         this.#colorClusters = this.createColorClusters()
 
+        const colorFrequencies = this.getColorFrequencies()
+
         // Find K random pixels
-        this.#referencePixels = this.getReferencePixels()
+        // this.#referencePixels = this.getReferencePixels()
+        this.#referencePixels = this.getInitialReferencePixels()
         console.log('Initial reference pixels: ' + this.#referencePixels)
 
         // Cluster together pixel to reference pixels
@@ -65,6 +68,35 @@ export class ColorPaletteFromPixels {
         return colorClustersCollection
     }
 
+    getColorFrequencies() {
+        const frequentPixels = []
+        const threshold = 50
+
+        this.#rgbaValues.forEach((pixel) => {
+            let foundSimilarPixel = false
+            
+
+            frequentPixels.forEach(pixelGroup => {
+                const frequentPixel = pixelGroup.pixel
+                const distance = this.calculateDistanceToReferencePixel(pixel, frequentPixel)
+                
+                if (distance < threshold) {
+                    pixelGroup.count++
+                    foundSimilarPixel = true
+                }
+            })
+
+            if (!foundSimilarPixel) {
+                frequentPixels.push({ pixel: pixel, count: 1 })
+            }
+        })
+
+        const sortedFrequentPixels = frequentPixels.sort((a, b) => b.count - a.count)
+
+        console.log('Frequent pixels: ')
+        console.log(sortedFrequentPixels)
+    }
+
     /**
      * Gets random pixels from array based on numbers of colors to extract.
      *
@@ -78,6 +110,40 @@ export class ColorPaletteFromPixels {
         const randomPixelIndex = Math.floor(Math.random() * amountOfPixels)
         const randomPixel = this.#rgbaValues[randomPixelIndex]
         referencePixels.push(randomPixel)
+
+        for (let i = 1; i < this.#numberOfColorsToExtract; i++) {
+            let maxDistanceOfPixel = 0
+            let pixelFurthestAway = null
+
+            // Get rest of pixels with k-mean++ logic - Calculated distance to others for better spread
+            this.#rgbaValues.forEach((pixel) => {
+                const pixelDistanceMoved = referencePixels.map((referencePixel) => this.calculateDistanceToReferencePixel(pixel, referencePixel))
+                const minimumDistanceMoved = Math.min(...pixelDistanceMoved)
+                if (minimumDistanceMoved > maxDistanceOfPixel) {
+                    maxDistanceOfPixel = minimumDistanceMoved
+                    pixelFurthestAway = pixel
+                }
+            })
+            referencePixels.push(pixelFurthestAway)
+        }
+        return referencePixels
+    }
+
+    getInitialReferencePixels() {
+        const referencePixels = []
+        const amountOfPixels = this.#rgbaValues.length
+
+        // Get first pixels based on frequency of colors
+        this.#rgbaValues.forEach((pixel) => {
+            const red = pixel[0]
+            const green = pixel[1]
+            const blue = pixel[2]
+            const alpha = pixel[3]
+
+            if (referencePixels.length) {
+
+            }
+        })
 
         for (let i = 1; i < this.#numberOfColorsToExtract; i++) {
             let maxDistanceOfPixel = 0
