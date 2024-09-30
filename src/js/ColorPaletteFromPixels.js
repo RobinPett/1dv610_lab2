@@ -1,8 +1,6 @@
 // TODO
 // 
-// Rewrite for loops as forEach
-
-// DOn't allow too small sets of data of pixels to be analysed
+// Rewrite for loops as forEach for efficiency
 
 
 
@@ -95,7 +93,7 @@ export class ColorPaletteFromPixels {
             // Calculate saturation - min/max value of rgb /255 the bits
             const pixelSaturation = (Math.max(red, green, blue) - Math.min(red, green, blue)) / 255
 
-            // if (pixelBrightness < 0.5 || pixelSaturation < 0.5) return
+            if (pixelBrightness < 0.5 || pixelSaturation < 0.5) return
 
             frequentPixels.forEach(pixelGroup => {
                 const frequentPixel = pixelGroup.pixel
@@ -151,7 +149,7 @@ export class ColorPaletteFromPixels {
     getInitialReferencePixels() {
         const referencePixels = []
 
-        // Get first pixels based on frequency of colors
+        // Get fmost frequent colors
         const colorFrequencies = this.getColorFrequencies()
 
         console.log('Color frequencies: ')

@@ -65,10 +65,12 @@ export class ImageToPixels {
             let imageElement = document.createElement('img')
             this.#imageElement = imageElement
 
+
             console.log(imageElement)
 
             imageElement.src = this.#imageURL
             imageElement.crossOrigin = 'Anonymous' // To allow loading images from cross origin sources
+            imageElement.alt = 'Image'
 
             imageElement.onload = (() => {
                 console.log('Image loaded')
@@ -120,22 +122,39 @@ export class ImageToPixels {
         return extractedRgbaValues
     }
 
-    async getRgbaValues() {
+    /**
+     * Gets image data as an array of pixels.
+     * Pixels are structured like this: [red, green, blue, alpha].
+     * 
+     * @returns {Array} pixels.
+     */
+    async getPixels() {
         await this.#imageLoadPromise
         return await this.#rgbaValues
     }
 
-    async getImageWidth() {
+    /**
+     * Gets image width in px.
+     * 
+     * @returns {number} - Width in px.
+     */
+    async getWidthInPx() {
         await this.#imageLoadPromise
         return await this.#imageWidthInPx
     }
 
-    async getImageHeight() {
+    /**
+     * Gets image height in pixels.
+     * 
+     * @returns {number} - Height in px.
+     */
+    async getHeightInPx() {
         await this.#imageLoadPromise
         return await this.#imageHeightInPx
     }
 
-    getTest() {
-        return 'Test ok'
+    async getImageElement() {
+        await this.#imageLoadPromise
+        return await this.#imageElement
     }
 }
