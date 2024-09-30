@@ -38,6 +38,14 @@ export class ColorPaletteFromPixels {
     #colorFrequencies
 
     constructor(rgbaValues, numberOfColorsToExtract) {
+        if (numberOfColorsToExtract < 3 || numberOfColorsToExtract > 10) {
+            throw new Error('A palette must be between 3 and 10 colors')
+        }
+
+        if (rgbaValues.length < 100) {
+            throw new Error('Pixel data must be above 100 pixels - 10x10px')
+        }
+
         this.#rgbaValues = rgbaValues
         this.#numberOfColorsToExtract = numberOfColorsToExtract
         this.findDominantColors()
@@ -84,12 +92,10 @@ export class ColorPaletteFromPixels {
             // Reference = https://en.wikipedia.org/wiki/Luma_(video)
             const pixelBrightness = (red * 0.299 + green * 0.587 + blue * 0.114) / 255
 
-            // Calculate saturation
+            // Calculate saturation - min/max value of rgb /255 the bits
             const pixelSaturation = (Math.max(red, green, blue) - Math.min(red, green, blue)) / 255
 
-            if (pixelBrightness < 0.5 || pixelSaturation < 0.5) {
-                return
-            }
+            // if (pixelBrightness < 0.5 || pixelSaturation < 0.5) return
 
             frequentPixels.forEach(pixelGroup => {
                 const frequentPixel = pixelGroup.pixel
