@@ -13,5 +13,7 @@
 ## Known issues
 - Image links can fail if the server has origin controll
 
+- Images with just a few colors can't extract multiple colors
+
 
 
