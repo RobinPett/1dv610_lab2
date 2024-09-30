@@ -21,32 +21,60 @@ imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 
 // ----------------------------------------------------------------------------------------
 
-console.log('Connected to browser')
+console.log('Color Palette Extractor connected to browser')
 
-const body = document.querySelector('body')
-const img = document.createElement('img')
-img.src = imageURL
-img.style.width = 500
+// const body = document.querySelector('body')
+// const img = document.createElement('img')
+// img.src = imageURL
+// img.style.width = 500
 
-body.appendChild(img)
+// body.appendChild(img)
 
 // extract rgba values from image
-const imageToPixels = new ImageToPixels(imageURL)
-const rgbaValues = await imageToPixels.getRgbaValues()
 
-console.log(rgbaValues)
+/**
+ * Load an image and create
+ * @param {string} imageUrl - URL to image
+ * @returns
+ */
+export function extractPixelsFromImage(imageUrl) {
+    const imageToPixels = new ImageToPixels(imageURL)
+    return imageToPixels
+}
 
-const numberofColorsInColorPalette = 5
-const colorPaletteFromPixels = new ColorPaletteFromPixels(rgbaValues, numberofColorsInColorPalette)
-const extractedColors = colorPaletteFromPixels.getDominantColors()
+export async function getRgbaValues(imageToPixels) {
+    const rgbaValues = await imageToPixels.getRgbaValues()
+    return rgbaValues
+}
+
+export function getColorPalette(rgbaValues, numberOfColorsToExtract) {
+    const colorPaletteFromPixels = new ColorPaletteFromPixels(rgbaValues, numberOfColorsToExtract)
+    const extractedColors = colorPaletteFromPixels.getDominantColors()
+    return extractedColors
+}
+
+// Example usage
+
+const imageToPixels = extractPixelsFromImage(imageURL)
+console.log('Image to pixels: ')
+console.log(imageToPixels)
+
+const pixels = await imageToPixels.getRgbaValues()
+console.log('Pixels: ')
+console.log(pixels)
+
+const colorPalette = getColorPalette(pixels, 5)
+console.log('Color palette: ')
+console.log(colorPalette)
+
 
 
 // Create divs with color info extracted
-extractedColors.forEach((color) => {
-    const div = document.createElement('div')
-    div.style.backgroundColor = `rgb(${color.red}, ${color.green}, ${color.blue})`
-    div.style.height = '100px'
-    div.style.width = '100px'
+// extractedColors.forEach((color) => {
+//     const div = document.createElement('div')
+//     div.style.backgroundColor = `rgb(${color.red}, ${color.green}, ${color.blue})`
+//     div.style.height = '100px'
+//     div.style.width = '100px'
 
-    body.appendChild(div)
-})
+//     body.appendChild(div)
+// })
