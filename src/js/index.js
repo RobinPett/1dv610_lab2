@@ -1,4 +1,6 @@
-// Main module file
+/**
+ * Main module file for Color-Palette-Extractor
+ */
 import { ColorPaletteFromPixels } from "./ColorPaletteFromPixels.js"
 import { ImageToPixels } from "./ImageToPixels.js"
 
@@ -15,6 +17,9 @@ imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 // imageURL = 'https://i.ibb.co/9rDyJzT/color-Test.jpg'
 
 // imageURL = 'https://i.ibb.co/8NSZWDf/small-tets-image.jpg'
+
+
+// ----------------------------------------------------------------------------------------
 
 console.log('Connected to browser')
 
