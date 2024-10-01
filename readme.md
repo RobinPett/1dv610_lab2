@@ -2,11 +2,14 @@
 ### ⚠️ Disclaimer - Developed for a school project - Module will not be maintained
 
 ## Description
-Extracts color palettes from images to be used in a browser.
+Extracts color palettes from images to be used in a browser environment.
+- Enter a image URL, extract pixels, generate color palettes in different styles.
 
 
-## Installation instructions
+## Installation
  > npm install color-palette-extractor
+ 
+ Make sure the module is imported in a script which is loaded in a html page for it to have access to the DOM. 
 
 ## Usage examples
 
@@ -45,7 +48,6 @@ body.append(paletteDiv)
 
 ## Known issues
 - Image links can fail if the server has origin controll
-
 - Images with just a few colors can't extract multiple colors
 
 ## License

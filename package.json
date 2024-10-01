@@ -1,7 +1,7 @@
 {
-  "name": "1dv610_lab2",
+  "name": "color-palette-extractor",
   "version": "1.0.0",
-  "description": "A small module",
+  "description": "Extract ",
   "main": "index.js",
   "type": "module",
   "scripts": {
