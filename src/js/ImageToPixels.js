@@ -98,9 +98,6 @@ export class ImageToPixels {
      * @param {CanvasRenderingContext2D} context 
      */
     async extractRgbaValues(context) {
-        console.log('Extracting rgab values')
-
-
         const imageData = context.getImageData(0, 0, this.#imageWidthInPx, this.#imageHeightInPx)
         const data = imageData.data
 

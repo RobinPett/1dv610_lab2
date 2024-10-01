@@ -2,7 +2,7 @@
 import { mockImageData } from "./img/mockImageData"
 import { ImageToPixels } from "../src/js/ImageToPixels"
 
-// Mock element since they do not load in a test DOM
+// Mock element since they do not load in a real DOM
 const mockImage = {
     width: 100,
     height: 100,

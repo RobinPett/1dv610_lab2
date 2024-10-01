@@ -19,9 +19,11 @@ describe('ImageToPixels class test', () => {
         expect(pixels.length).toBeGreaterThan(0)
     })
 
-    test('Get image info', async () => {
-        const imageElement = imageToPixels.getImageElement()
+    test('Get image height and width', async () => {
+        const height = await imageToPixels.getHeightInPx()
+        const width = await imageToPixels.getWidthInPx()
 
-        expect(typeof imageElement).toBe('object')
+        expect(typeof height).toBe('number')
+        expect(typeof width).toBe('number')
     })
 })
