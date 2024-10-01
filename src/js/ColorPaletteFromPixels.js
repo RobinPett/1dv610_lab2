@@ -330,4 +330,8 @@ export class ColorPaletteFromPixels {
         this.#colorPaletteType = 'bright'
         return this.getColorPalette()
     }
+
+    getRgbaValues() {
+        return this.#rgbaValues
+    }
 }

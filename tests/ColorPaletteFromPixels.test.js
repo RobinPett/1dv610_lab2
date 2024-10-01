@@ -5,10 +5,20 @@
 
 import { ColorPaletteFromPixels } from "../src/js/ColorPaletteFromPixels"
 import { testImage } from "./img/testImage"
+import { largeTestImage } from "./img/largeTestImage"
 
 describe('ColorPaletteFromPixels class test', () => {
     let colorPaletteFromPixels
     let numberOfColorsToExtract = 3
+
+    test('Reduce large image', () => {
+        const colorPaletteFromPixels = new ColorPaletteFromPixels(largeTestImage, numberOfColorsToExtract)
+        const extractedColors = colorPaletteFromPixels.getColorPalette()
+        const rgbaValues = colorPaletteFromPixels.getRgbaValues()
+        expect(largeTestImage.length).toBeGreaterThan(rgbaValues.length)
+        expect(typeof extractedColors[0]).toBe('object')
+    })
+
     
     test('Get 3 dominant colors from pixel data', () => {
         const colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
@@ -17,19 +27,35 @@ describe('ColorPaletteFromPixels class test', () => {
         expect(typeof extractedColors[0]).toBe('object')
     })
 
-    test('Get 5 dominant colors from pixel data', () => {
-        numberOfColorsToExtract = 5
-        colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
-        const extractedColors = colorPaletteFromPixels.getColorPalette()
-        expect(extractedColors.length).toBe(5)
-        expect(typeof extractedColors[0]).toBe('object')
-    })
-
     test('Get 10 dominant colors from pixel data', () => {
         numberOfColorsToExtract = 10
         colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
         const extractedColors = colorPaletteFromPixels.getColorPalette()
         expect(extractedColors.length).toBe(10)
+        expect(typeof extractedColors[0]).toBe('object')
+    })
+
+    test('Get muted color palette', () => {
+        numberOfColorsToExtract = 3
+        colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
+        const extractedColors = colorPaletteFromPixels.getMutedPalette()
+        expect(extractedColors.length).toBe(3)
+        expect(typeof extractedColors[0]).toBe('object')
+    })
+
+    test('Get bright color palette', () => {
+        numberOfColorsToExtract = 3
+        colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
+        const extractedColors = colorPaletteFromPixels.getBrightPalette()
+        expect(extractedColors.length).toBe(3)
+        expect(typeof extractedColors[0]).toBe('object')
+    })
+
+    test('Get dark color palette', () => {
+        numberOfColorsToExtract = 3
+        colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
+        const extractedColors = colorPaletteFromPixels.getDarkPalette()
+        expect(extractedColors.length).toBe(3)
         expect(typeof extractedColors[0]).toBe('object')
     })
 })
