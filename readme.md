@@ -11,6 +11,10 @@ Extracts color palettes from images to be used in a browser environment.
  
  Make sure the module is imported in a script which is loaded in a html page for it to have access to the DOM. 
 
+ ## Dependencies
+ Color Palette Extractor is not dependent on any other modules to run.
+ It must howerver run in a browser environment to have access to the DOM to create Image and Canvas elements.
+
 ## Usage examples
 
 ```javascript
