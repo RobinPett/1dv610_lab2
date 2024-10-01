@@ -11,7 +11,7 @@ Extracts color palettes from images to be used in a browser.
 ## Usage examples
 
 ```javascript
-  import { color-palette-extractor } from "color-palette-extractor"
+  import { colorPaletteExtractor } from "color-palette-extractor"
 
   const imageUrl = 'https://server.com/image.jpg'
 
