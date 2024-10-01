@@ -41,6 +41,9 @@ const paletteDiv = paletteExtractor.presentPalette(palette, 100)
 
 // Present in your own html document
 const body = document.querySelector('body')
+const imageElement = image.getImageElement()
+
+body.append(imageElement)
 body.append(paletteDiv)
 ```
 

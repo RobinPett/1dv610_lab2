@@ -84,11 +84,10 @@ export class ImageToPixels {
     }
 
     createCanvasElement(imageElement) {
-        console.log('Creating canvas')
         const canvas = document.createElement('canvas')
-        const context = canvas.getContext('2d')
         canvas.width = this.#imageWidthInPx
         canvas.height = this.#imageHeightInPx
+        const context = canvas.getContext('2d')
         context.drawImage(imageElement, 0, 0)
         return context
     }

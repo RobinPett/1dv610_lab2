@@ -12,7 +12,7 @@ describe('ColorPaletteFromPixels class test', () => {
     
     test('Get 3 dominant colors from pixel data', () => {
         const colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
-        const extractedColors = colorPaletteFromPixels.getDominantColors()
+        const extractedColors = colorPaletteFromPixels.getColorPalette()
         expect(extractedColors.length).toBe(3)
         expect(typeof extractedColors[0]).toBe('object')
     })
@@ -20,7 +20,7 @@ describe('ColorPaletteFromPixels class test', () => {
     test('Get 5 dominant colors from pixel data', () => {
         numberOfColorsToExtract = 5
         colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
-        const extractedColors = colorPaletteFromPixels.getDominantColors()
+        const extractedColors = colorPaletteFromPixels.getColorPalette()
         expect(extractedColors.length).toBe(5)
         expect(typeof extractedColors[0]).toBe('object')
     })
@@ -28,7 +28,7 @@ describe('ColorPaletteFromPixels class test', () => {
     test('Get 10 dominant colors from pixel data', () => {
         numberOfColorsToExtract = 10
         colorPaletteFromPixels = new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)
-        const extractedColors = colorPaletteFromPixels.getDominantColors()
+        const extractedColors = colorPaletteFromPixels.getColorPalette()
         expect(extractedColors.length).toBe(10)
         expect(typeof extractedColors[0]).toBe('object')
     })
