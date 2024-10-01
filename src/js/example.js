@@ -19,9 +19,9 @@ const colorPalette = colorPaletteExtractor.initiateColorExtraction(pixels, 5)
 
 // Get seperate color palettes
 const extraxtedPalette = colorPalette.getColorPalette()
-// const extraxtedPalette = colorPalette.getDarkPalette()
-// const extraxtedPalette = colorPalette.getBrightPalette()
-// const extraxtedPalette = colorPalette.getMutedPalette()
+const darkPalette = colorPalette.getDarkPalette()
+const brightPalette = colorPalette.getBrightPalette()
+const mutedPalette = colorPalette.getMutedPalette()
 
 
 const colorPaletteDiv = colorPaletteExtractor.presentColorPalette(extraxtedPalette, 100)
