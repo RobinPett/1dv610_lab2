@@ -47,6 +47,7 @@ body.append(paletteDiv)
 ## Bug report
 
 ## Known issues
+- Generating palettes can be slow - optimizing needed
 - Image links can fail if the server has origin controll
 - Images with just a few colors can't extract multiple colors
 
