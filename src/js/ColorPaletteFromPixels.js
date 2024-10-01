@@ -38,17 +38,12 @@ export class ColorPaletteFromPixels {
             throw new Error('Pixel data must be above 100 pixels - 10x10px')
         }
 
-        console.log(rgbaValues.length)
-
         if (rgbaValues.length > 100000) {
             this.#rgbaValues = this.reducePixels(rgbaValues)
         } else {
             this.#rgbaValues = rgbaValues
         }
 
-        console.log(this.#rgbaValues.length)
-
-        
         this.#numberOfColorsToExtract = numberOfColorsToExtract
     }
 
@@ -147,8 +142,6 @@ export class ColorPaletteFromPixels {
     getColorFrequencies() {
         const frequentPixels = []
         const threshold = 30
-
-        console.log(this.#rgbaValues)
 
         // function - Group together pixels
         this.#rgbaValues.forEach((pixel) => {
@@ -329,5 +322,9 @@ export class ColorPaletteFromPixels {
     getBrightPalette() {
         this.#colorPaletteType = 'bright'
         return this.getColorPalette()
+    }
+
+    getRgbaValues() {
+        return this.#rgbaValues
     }
 }
