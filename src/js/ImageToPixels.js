@@ -7,11 +7,6 @@ export class ImageToPixels {
     /**
      * Image to be loaded.
      */
-    #image
-
-    /**
-     * Image to be loaded.
-     */
     #imageWidthInPx
 
     /**
@@ -59,21 +54,15 @@ export class ImageToPixels {
      * Create an image element based on image url.
      */
     createImage() {
-        console.log('Creates image element')
-
         return new Promise((resolve, reject) => {
             let imageElement = document.createElement('img')
             this.#imageElement = imageElement
-
-
-            console.log(imageElement)
 
             imageElement.src = this.#imageURL
             imageElement.crossOrigin = 'Anonymous' // To allow loading images from cross origin sources
             imageElement.alt = 'Image'
 
             imageElement.onload = (() => {
-                console.log('Image loaded')
                 resolve(imageElement)
             })
 
@@ -147,10 +136,5 @@ export class ImageToPixels {
     async getHeightInPx() {
         await this.#imageLoadPromise
         return await this.#imageHeightInPx
-    }
-
-    async getImageElement() {
-        await this.#imageLoadPromise
-        return await this.#imageElement
     }
 }
