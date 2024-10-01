@@ -24,7 +24,7 @@ export class ColorPaletteFromPixels {
     #colorClusters
 
     /**
-     * Type of palette - Default, Bright, Dark
+     * Type of palette - Bright, Dark, Muted
      */
     #colorPaletteType
     
