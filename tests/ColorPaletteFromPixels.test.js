@@ -4,7 +4,7 @@
  */
 
 import { ColorPaletteFromPixels } from "../src/js/ColorPaletteFromPixels"
-import { testImage } from "./img/testImage"
+import { testImage } from "./img/testImage.js"
 import { largeTestImage } from "./img/largeTestImage"
 
 describe('ColorPaletteFromPixels class test', () => {
@@ -60,11 +60,11 @@ describe('Colorpalette amount of color palettes error test', () => {
     let numberOfColorsToExtract = 1
 
     test('Get Error - Too few colors to extract', () => {
-        expect(() => new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)).toThrow('A palette must be between 3 and 10 colors')
+        expect(() => new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)).toThrow('A palette must be between 1 and 10 colors')
     })
 
     numberOfColorsToExtract = 20
     test('Get Error - Too many colors to extract', () => {
-        expect(() => new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)).toThrow('A palette must be between 3 and 10 colors')
+        expect(() => new ColorPaletteFromPixels(testImage, numberOfColorsToExtract)).toThrow('A palette must be between 1 and 10 colors')
     })
 })
