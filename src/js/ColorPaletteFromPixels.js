@@ -30,40 +30,46 @@ export class ColorPaletteFromPixels {
     
 
     constructor(rgbaValues, numberOfColorsToExtract) {
-        if (numberOfColorsToExtract < 3 || numberOfColorsToExtract > 10) {
-            throw new Error('A palette must be between 3 and 10 colors')
-        }
+        this.#checkNumbersOfColors(numberOfColorsToExtract)
+        this.#checkRgbaValues(rgbaValues)
+    }
 
+    #checkNumbersOfColors(numberOfColorsToExtract) {
+        if (numberOfColorsToExtract < 1 || numberOfColorsToExtract > 10) {
+            throw new Error('A palette must be between 1 and 10 colors')
+        } else {
+            this.#numberOfColorsToExtract = numberOfColorsToExtract
+        }
+    }
+
+    #checkRgbaValues(rgbaValues) {
         if (rgbaValues.length < 100) {
             throw new Error('Pixel data must be above 100 pixels - 10x10px')
         }
 
         if (rgbaValues.length > 100000) {
-            this.#rgbaValues = this.reducePixels(rgbaValues)
+            this.#rgbaValues = this.#reducePixels(rgbaValues)
         } else {
             this.#rgbaValues = rgbaValues
         }
-
-        this.#numberOfColorsToExtract = numberOfColorsToExtract
     }
 
     /**
      * Using K-Clustering algorithm to find dominant clusters of similar colors.
      * Reference: https://en.wikipedia.org/wiki/K-means_clustering#Algorithms
      */
-    findDominantColors() {
+    #findDominantColors() {
         // Create Color clusters based on amountOfColorsToExtract
-        this.#colorClusters = this.createColorClusters(this.#numberOfColorsToExtract)
+        this.#colorClusters = this.#createColorClusters(this.#numberOfColorsToExtract)
 
         // Find reference pixels for clusters
-        this.#referencePixels = this.getInitialReferencePixels()
-        console.log(this.#referencePixels)
+        this.#referencePixels = this.#getInitialReferencePixels()
 
         // Cluster together pixel to reference pixels
-        this.addToColorCluster()
+        this.#addToColorCluster()
 
         // Loops over pixels and gets more accurate colors from image
-        this.iterateOverPixels()
+        this.#iterateOverPixels()
     }
 
     /**
@@ -71,7 +77,7 @@ export class ColorPaletteFromPixels {
      * @param {Array} rgbaValues 
      * @returns {Array} - Reduced pixels
      */
-    reducePixels(rgbaValues) {
+    #reducePixels(rgbaValues) {
         const reducedPixels = []
 
         // Skip every 10th pixel
@@ -87,7 +93,7 @@ export class ColorPaletteFromPixels {
      * Creates an empty cluster (array) for each color to extract.
      * @returns 
      */
-    createColorClusters() {
+    #createColorClusters() {
         const colorClustersCollection = []
         for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
             const newCluster = []
@@ -96,7 +102,7 @@ export class ColorPaletteFromPixels {
         return colorClustersCollection
     }
 
-    addToColorCluster() {
+    #addToColorCluster() {
         for (let i = 0; i < this.#rgbaValues.length; i++) {
             const pixel = this.#rgbaValues[i] // A Pixel is an array of rgba values - [r, g, b, a]
             const meassuredDistances = []
@@ -105,7 +111,7 @@ export class ColorPaletteFromPixels {
             // Calculate distance between pixel and reference pixels
             for (let i = 0; i < this.#referencePixels.length; i++) {
                 const referencePixel = this.#referencePixels[i]
-                const distance = this.calculateDistanceToReferencePixel(pixel, referencePixel)
+                const distance = this.#calculateDistanceToReferencePixel(pixel, referencePixel)
                 meassuredDistances.push(distance)
             }
 
@@ -120,29 +126,23 @@ export class ColorPaletteFromPixels {
         }
     }
 
-    clearClusters() {
+    #clearClusters() {
         this.#colorClusters.forEach(cluster => {
             cluster.length = 0
         })
     }
 
-    getInitialReferencePixels() {
+    #getInitialReferencePixels() {
         const referencePixels = []
 
-        console.log(this.#colorPaletteType)
-
         // Get most frequent colors
-        const colorFrequencies = this.getColorFrequencies()
-        console.log(colorFrequencies)
+        const colorFrequencies = this.#getColorFrequencies()
 
         if (colorFrequencies.length < this.#numberOfColorsToExtract) {
-            console.log('Frequent colors: ' + colorFrequencies.length)
-            console.log('Colors to extract: ' + this.#numberOfColorsToExtract)
-
             this.#numberOfColorsToExtract = colorFrequencies.length
 
-            this.clearClusters()
-            this.#colorClusters = this.createColorClusters()
+            this.#clearClusters()
+            this.#colorClusters = this.#createColorClusters()
         }
 
         // Extract most frequent colors as initial 
@@ -153,7 +153,7 @@ export class ColorPaletteFromPixels {
         return referencePixels
     }
 
-    getColorFrequencies() {
+    #getColorFrequencies() {
         const frequentPixels = []
         const threshold = 50
 
@@ -168,11 +168,11 @@ export class ColorPaletteFromPixels {
             const pixelSaturation = (Math.max(red, green, blue) - Math.min(red, green, blue)) / 255
             const pixelValues = { pixelBrightness, pixelSaturation }
             
-            if (this.isPixelBrightAndSaturatedEnough(pixelValues)) {
+            if (this.#isPixelBrightAndSaturatedEnough(pixelValues)) {
                 
                 frequentPixels.forEach(pixelGroup => {
                     const frequentPixel = pixelGroup.pixel
-                    const distance = this.calculateDistanceToReferencePixel(pixel, frequentPixel)
+                    const distance = this.#calculateDistanceToReferencePixel(pixel, frequentPixel)
                     
                     if (distance < threshold) {
                         pixelGroup.count++
@@ -182,7 +182,6 @@ export class ColorPaletteFromPixels {
     
                 if (!foundSimilarPixel) {
                     frequentPixels.push({ pixel: pixel, count: 1 })
-                    console.log(frequentPixels)
                 }
             }
         })
@@ -190,8 +189,8 @@ export class ColorPaletteFromPixels {
         const sortedFrequentPixels = frequentPixels.sort((a, b) => b.count - a.count)
         return sortedFrequentPixels
     }
-    // Disregard pixels that are too bright or too dark basde on type
-    isPixelBrightAndSaturatedEnough(pixelValues) {
+
+    #isPixelBrightAndSaturatedEnough(pixelValues) {
             const {pixelBrightness, pixelSaturation} = pixelValues
             
 
@@ -214,7 +213,7 @@ export class ColorPaletteFromPixels {
             return true // Pixel is bright and saturated enough
     }
 
-    calculateDistanceToReferencePixel(pixel, referencePixel) {
+    #calculateDistanceToReferencePixel(pixel, referencePixel) {
 
         const [ red, green, blue, alpha ] = pixel
         const [ referenceRed, referenceGreen, referenceBlue, referenceAlpha ] = referencePixel
@@ -230,7 +229,7 @@ export class ColorPaletteFromPixels {
         return distanceCalculation
     }
 
-    getUpdatedReferencePixels() {
+    #getUpdatedReferencePixels() {
         const updatedReferencePixels = []
 
         // Loop through each cluster and then each pixel in cluster
@@ -263,36 +262,36 @@ export class ColorPaletteFromPixels {
         return updatedReferencePixels
     }
 
-    iterateOverPixels() {
+    #iterateOverPixels() {
         let convergence = false
         let iterations = 0
         const maxIterations = 100
         do {
             iterations++
-            const updatedReferencePixels = this.getUpdatedReferencePixels()
+            const updatedReferencePixels = this.#getUpdatedReferencePixels()
 
             // Check if pixels don't change no more - Convergence
-            convergence = this.checkConvergence(updatedReferencePixels, this.#referencePixels)
+            convergence = this.#checkConvergence(updatedReferencePixels, this.#referencePixels)
 
             this.#referencePixels = updatedReferencePixels
 
-            this.clearClusters()
+            this.#clearClusters()
 
             // Create Color clusters based on amountOfColorsToExtract
-            this.#colorClusters = this.createColorClusters()
+            this.#colorClusters = this.#createColorClusters()
 
             // Cluster together pixel to reference pixels
-            this.addToColorCluster()
+            this.#addToColorCluster()
         } while (!convergence && iterations < maxIterations)
     }
 
-    checkConvergence(updatedReferencePixels, referencePixels) {
+    #checkConvergence(updatedReferencePixels, referencePixels) {
         const meassuredDistances = []
         let totalDistanceMoved = 0
         const threshold = 0.001
 
         updatedReferencePixels.forEach((pixel, index) => {
-            const distance = this.calculateDistanceToReferencePixel(pixel, referencePixels[index])
+            const distance = this.#calculateDistanceToReferencePixel(pixel, referencePixels[index])
             totalDistanceMoved += distance
 
             if (distance <= threshold) return false
@@ -301,13 +300,11 @@ export class ColorPaletteFromPixels {
     }
 
     /**
-     * Extracts a colorPalette based on type:
-     * Types: default, bright, dark.
-     * 
-     * @param {string} type - Type of palette to extract.
+     * Returns an array of colors as objects:
+     * [ {red, green, blue, alpha } ]
      */
     getColorPalette() {
-        this.findDominantColors()
+        this.#findDominantColors()
 
         const extractedColors = []
 
@@ -320,25 +317,46 @@ export class ColorPaletteFromPixels {
             extractedColors.push(extractedColor)
         }
 
+        if (extractedColors.length === 0) {
+            console.error('Could not extract any colors from this image')
+        }
+
         return extractedColors
 
     }
 
+   /**
+     * Returns an array of muted colors as objects:
+     * [ {red, green, blue, alpha } ]
+    * 
+    */
     getMutedPalette() {
         this.#colorPaletteType = 'muted'
         return this.getColorPalette()
     }
 
+    /**
+     * Returns an array of dark colors as objects:
+     * [ {red, green, blue, alpha } ]
+     */
     getDarkPalette() {
         this.#colorPaletteType = 'dark'
         return this.getColorPalette()
     }
 
+    /**
+     * Returns an array of dark colors as objects:
+     * [ {red, green, blue, alpha } ]
+     */
     getBrightPalette() {
         this.#colorPaletteType = 'bright'
         return this.getColorPalette()
     }
 
+    /**
+     * Returns an array of RGBA values from image
+     * [ [ red, green, blue, alpha ] ]
+     */
     getRgbaValues() {
         return this.#rgbaValues
     }

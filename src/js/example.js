@@ -2,7 +2,7 @@
  * Example usage of Color-Palette-Extractor
  */
 
-import * as colorPaletteExtractor from './index.js'
+import { ColorPaletteExtractor } from "./index.js"
 
 // Test Images --------------------------------------------------------------------
 let imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
@@ -13,22 +13,25 @@ let imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 // imageURL = 'https://farm9.staticflickr.com/8410/30193245810_7b7ff74cd5.jpg'
 // ---------------------------------------------------------------------------------------
 
-const image = colorPaletteExtractor.loadImage(imageURL)
+const paletteExtractor = new ColorPaletteExtractor()
 
+const image = paletteExtractor.loadImage(imageURL)
 const pixels = await image.getPixels()
-const colorPalette = colorPaletteExtractor.initiateColorExtraction(pixels, 10)
+
+// Set number of colors in palette
+const palette = paletteExtractor.startExtraction(pixels, 10)
 
 // Get seperate color palettes
-const extraxtedPalette = colorPalette.getColorPalette()
-const darkPalette = colorPalette.getDarkPalette()
-const brightPalette = colorPalette.getBrightPalette()
-const mutedPalette = colorPalette.getMutedPalette()
+const extraxtedPalette = palette.getColorPalette()
+const darkPalette = palette.getDarkPalette()
+const brightPalette = palette.getBrightPalette()
+const mutedPalette = palette.getMutedPalette()
 
 
-const colorPaletteDiv = colorPaletteExtractor.presentColorPalette(extraxtedPalette, 100)
-const darkPalettedIV = colorPaletteExtractor.presentColorPalette(darkPalette, 100)
-const brightPaletteDiv = colorPaletteExtractor.presentColorPalette(brightPalette, 100)
-const mutedPaletteDiv = colorPaletteExtractor.presentColorPalette(mutedPalette, 100)
+const colorPaletteDiv = paletteExtractor.presentColorPalette(extraxtedPalette, 100)
+const darkPalettedIV = paletteExtractor.presentColorPalette(darkPalette, 100)
+const brightPaletteDiv = paletteExtractor.presentColorPalette(brightPalette, 100)
+const mutedPaletteDiv = paletteExtractor.presentColorPalette(mutedPalette, 100)
 
 // Create image
 const imageElement = document.createElement('img')
