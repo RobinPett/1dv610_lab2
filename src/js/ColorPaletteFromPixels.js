@@ -193,9 +193,9 @@ export class ColorPaletteFromPixels {
     #isPixelBrightAndSaturatedEnough(pixelValues) {
             const {pixelBrightness, pixelSaturation} = pixelValues
             
-
+            // Default
             if (!this.#colorPaletteType) {
-                if (pixelBrightness < 0.1 || pixelSaturation < 0.6) return false
+                if (pixelBrightness < 0.4 || pixelSaturation < 0.5) return false
             }
 
             if (this.#colorPaletteType === 'bright') {
