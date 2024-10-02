@@ -11,8 +11,8 @@ Extracts color palettes from images to be used in a browser environment.
   
 
  ## Dependencies
- Color Palette Extractor is not dependent on any other modules to run.
- It must howerver run in a browser environment to have access to the DOM to create Image and Canvas elements.
+ Color Palette Extractor is an ES6 module and is not compatible with ES5 environments.
+ It must also run in a browser environment to have access to the DOM to create Image and Canvas elements.
 
 ## Usage examples
 
