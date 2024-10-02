@@ -30,10 +30,19 @@ export class ColorPaletteFromPixels {
     
 
     constructor(rgbaValues, numberOfColorsToExtract) {
-        if (numberOfColorsToExtract < 3 || numberOfColorsToExtract > 10) {
-            throw new Error('A palette must be between 3 and 10 colors')
-        }
+        this.#checkNumbersOfColors(numberOfColorsToExtract)
+        this.#checkRgbaValues(rgbaValues)
+    }
 
+    #checkNumbersOfColors(numberOfColorsToExtract) {
+        if (numberOfColorsToExtract < 1 || numberOfColorsToExtract > 10) {
+            throw new Error('A palette must be between 1 and 10 colors')
+        } else {
+            this.#numberOfColorsToExtract = numberOfColorsToExtract
+        }
+    }
+
+    #checkRgbaValues(rgbaValues) {
         if (rgbaValues.length < 100) {
             throw new Error('Pixel data must be above 100 pixels - 10x10px')
         }
@@ -43,8 +52,6 @@ export class ColorPaletteFromPixels {
         } else {
             this.#rgbaValues = rgbaValues
         }
-
-        this.#numberOfColorsToExtract = numberOfColorsToExtract
     }
 
     /**
@@ -182,7 +189,7 @@ export class ColorPaletteFromPixels {
         const sortedFrequentPixels = frequentPixels.sort((a, b) => b.count - a.count)
         return sortedFrequentPixels
     }
-    // Disregard pixels that are too bright or too dark basde on type
+
     #isPixelBrightAndSaturatedEnough(pixelValues) {
             const {pixelBrightness, pixelSaturation} = pixelValues
             
@@ -293,10 +300,8 @@ export class ColorPaletteFromPixels {
     }
 
     /**
-     * Extracts a colorPalette based on type:
-     * Types: default, bright, dark.
-     * 
-     * @param {string} type - Type of palette to extract.
+     * Returns an array of colors as objects:
+     * [ {red, green, blue, alpha } ]
      */
     getColorPalette() {
         this.#findDominantColors()
@@ -312,25 +317,46 @@ export class ColorPaletteFromPixels {
             extractedColors.push(extractedColor)
         }
 
+        if (extractedColors.length === 0) {
+            console.error('Could not extract any colors from this image')
+        }
+
         return extractedColors
 
     }
 
+   /**
+     * Returns an array of muted colors as objects:
+     * [ {red, green, blue, alpha } ]
+    * 
+    */
     getMutedPalette() {
         this.#colorPaletteType = 'muted'
         return this.getColorPalette()
     }
 
+    /**
+     * Returns an array of dark colors as objects:
+     * [ {red, green, blue, alpha } ]
+     */
     getDarkPalette() {
         this.#colorPaletteType = 'dark'
         return this.getColorPalette()
     }
 
+    /**
+     * Returns an array of dark colors as objects:
+     * [ {red, green, blue, alpha } ]
+     */
     getBrightPalette() {
         this.#colorPaletteType = 'bright'
         return this.getColorPalette()
     }
 
+    /**
+     * Returns an array of RGBA values from image
+     * [ [ red, green, blue, alpha ] ]
+     */
     getRgbaValues() {
         return this.#rgbaValues
     }
