@@ -38,16 +38,16 @@ export class ImageToPixels {
 
     constructor (imageUrl) {
         this.#imageURL = imageUrl
-        this.#imageLoadPromise = this.startImageExtraction()
+        this.#imageLoadPromise = this.#startImageExtraction()
     }
 
-    async startImageExtraction() {
+    async #startImageExtraction() {
         this.#imageElement = await this.createImage(this.#imageURL)
         this.#imageWidthInPx = this.#imageElement.width
         this.#imageHeightInPx = this.#imageElement.height
 
         this.#canvasElement = this.createCanvasElement(this.#imageElement)
-        this.#rgbaValues = this.extractRgbaValues(this.#canvasElement)
+        this.#rgbaValues = this.#extractRgbaValues(this.#canvasElement)
     }
 
     /**
@@ -86,7 +86,7 @@ export class ImageToPixels {
      *
      * @param {CanvasRenderingContext2D} context 
      */
-    async extractRgbaValues(context) {
+    async #extractRgbaValues(context) {
         const imageData = context.getImageData(0, 0, this.#imageWidthInPx, this.#imageHeightInPx)
         const data = imageData.data
 

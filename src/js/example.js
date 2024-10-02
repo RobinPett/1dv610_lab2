@@ -16,6 +16,7 @@ let imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 const image = colorPaletteExtractor.loadImage(imageURL)
 
 const pixels = await image.getPixels()
+console.log(pixels)
 const colorPalette = colorPaletteExtractor.initiateColorExtraction(pixels, 10)
 
 // Get seperate color palettes
