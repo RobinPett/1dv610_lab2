@@ -55,6 +55,9 @@ body.append(paletteDiv)
 - Image links can fail if the server has origin controll
 - Images with just a few colors can't extract multiple colors
 
+## Features to come
+- Allow users to manually set brightness and saturation levels for palettes
+
 ## License
 GNU GENERAL PUBLIC LICENSE
 @Robin Pettersson 2024

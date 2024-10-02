@@ -53,10 +53,11 @@ export class ColorPaletteFromPixels {
      */
     findDominantColors() {
         // Create Color clusters based on amountOfColorsToExtract
-        this.#colorClusters = this.createColorClusters()
+        this.#colorClusters = this.createColorClusters(this.#numberOfColorsToExtract)
 
         // Find reference pixels for clusters
         this.#referencePixels = this.getInitialReferencePixels()
+        console.log(this.#referencePixels)
 
         // Cluster together pixel to reference pixels
         this.addToColorCluster()
@@ -128,8 +129,21 @@ export class ColorPaletteFromPixels {
     getInitialReferencePixels() {
         const referencePixels = []
 
-        // Get fmost frequent colors
+        console.log(this.#colorPaletteType)
+
+        // Get most frequent colors
         const colorFrequencies = this.getColorFrequencies()
+        console.log(colorFrequencies)
+
+        if (colorFrequencies.length < this.#numberOfColorsToExtract) {
+            console.log('Frequent colors: ' + colorFrequencies.length)
+            console.log('Colors to extract: ' + this.#numberOfColorsToExtract)
+
+            this.#numberOfColorsToExtract = colorFrequencies.length
+
+            this.clearClusters()
+            this.#colorClusters = this.createColorClusters()
+        }
 
         // Extract most frequent colors as initial 
         for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
@@ -141,23 +155,21 @@ export class ColorPaletteFromPixels {
 
     getColorFrequencies() {
         const frequentPixels = []
-        const threshold = 30
+        const threshold = 50
 
         // function - Group together pixels
         this.#rgbaValues.forEach((pixel) => {
             let foundSimilarPixel = false
-            const [red, green, blue, alpha] = pixel
+            const [red, green, blue, alpha] = pixel 
 
-
-            // Calculate luminance (brightness) from rgb - https://en.wikipedia.org/wiki/Luma_(video)
+            // Calculate luminance (brightness) and saturation from rgb
+            // Refernce:https://en.wikipedia.org/wiki/Luma_(video)
             const pixelBrightness = (red * 0.299 + green * 0.587 + blue * 0.114) / 255
-
-            // Calculate saturation - min/max value of rgb /255 the bits
             const pixelSaturation = (Math.max(red, green, blue) - Math.min(red, green, blue)) / 255
-
             const pixelValues = { pixelBrightness, pixelSaturation }
             
             if (this.isPixelBrightAndSaturatedEnough(pixelValues)) {
+                
                 frequentPixels.forEach(pixelGroup => {
                     const frequentPixel = pixelGroup.pixel
                     const distance = this.calculateDistanceToReferencePixel(pixel, frequentPixel)
@@ -170,6 +182,7 @@ export class ColorPaletteFromPixels {
     
                 if (!foundSimilarPixel) {
                     frequentPixels.push({ pixel: pixel, count: 1 })
+                    console.log(frequentPixels)
                 }
             }
         })
@@ -177,26 +190,28 @@ export class ColorPaletteFromPixels {
         const sortedFrequentPixels = frequentPixels.sort((a, b) => b.count - a.count)
         return sortedFrequentPixels
     }
-
+    // Disregard pixels that are too bright or too dark basde on type
     isPixelBrightAndSaturatedEnough(pixelValues) {
             const {pixelBrightness, pixelSaturation} = pixelValues
+            
 
-            if(!this.#colorPaletteType) return true
+            if (!this.#colorPaletteType) {
+                if (pixelBrightness < 0.1 || pixelSaturation < 0.6) return false
+            }
 
-            // Disregard pixels that are too bright or too dark basde on type
             if (this.#colorPaletteType === 'bright') {
                 if (pixelBrightness < 0.5 || pixelSaturation < 0.5) return false
             } 
 
             if (this.#colorPaletteType === 'dark') {
-                if (pixelBrightness > 0.5 || pixelSaturation > 0.5) return false
+                if (pixelBrightness > 0.5) return false
             } 
             
             if (this.#colorPaletteType === 'muted') {
-                if (pixelBrightness < 0.5 || pixelSaturation > 0.5) return false
+                if (pixelBrightness < 0.2 || pixelSaturation > 0.4) return false
             }
 
-            return true // Pixel is bright and saturaded enough
+            return true // Pixel is bright and saturated enough
     }
 
     calculateDistanceToReferencePixel(pixel, referencePixel) {
