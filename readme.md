@@ -3,13 +3,12 @@
 
 ## Description
 Extracts color palettes from images to be used in a browser environment.
-- Enter a image URL, extract pixels, generate color palettes in different styles.
+- Enter a image URL, extract the pixels and generate color palettes in various styles.
 
 
 ## Installation
- > npm install color-palette-extractor
- 
- Make sure the module is imported in a script which is loaded in a html page for it to have access to the DOM. 
+ > $ npm install color-palette-extractor
+  
 
  ## Dependencies
  Color Palette Extractor is not dependent on any other modules to run.
@@ -20,27 +19,28 @@ Extracts color palettes from images to be used in a browser environment.
 ```javascript
   import { colorPaletteExtractor } from "color-palette-extractor"
 
-  const imageUrl = 'https://server.com/image.jpg'
+  const paletteExtractor = new ColorPaletteExtractor()
 
-  // Load and start extraction
-  const image = colorPaletteExtractor.loadImage(imageURL)
+  const image = paletteExtractor.loadImage('image.jpg')
   const pixels = await image.getPixels()
-  const colorPalette = paletteExtractor.startExtraction(pixels, 5)
+  
+  // Specify pixel data and number of colors
+  const palette = paletteExtractor.startExtraction(pixels, 10)
 
-  const palette = colorPalette.getColorPalette()
+  const extraxtedPalette = palette.getColorPalette()
 ```
 To get diffent palettes you can use:
 
 ```javascript
-const brightPalette = colorPalette.getBrightPalette()
-const darkPalette = colorPalette.getDarkPalette()
-const mutedPalette = colorPalette.getMutedPalette()
+const darkPalette = palette.getDarkPalette()
+const brightPalette = palette.getBrightPalette()
+const mutedPalette = palette.getMutedPalette()
 ```
 
 To present the color palette you can use:
 
 ```javascript
-// Get a div with the palette. Set size of each colored div.
+// Get a div with the palette. Set size of each colored div
 const paletteDiv = paletteExtractor.presentPalette(palette, 100)
 
 // Present in your own html document
@@ -48,14 +48,14 @@ const body = document.querySelector('body')
 body.append(paletteDiv)
 ```
 
-## Bug report
+## Example
+![example](.readme/example.PNG)
 
 ## Known issues
 - Generating palettes can be slow - optimizing needed
 - Image links can fail if the server has origin controll
-- Images with just a few colors can't extract multiple colors
 
-## Features to come
+## Upcoming Features
 - Allow users to manually set brightness and saturation levels for palettes
 
 ## License
