@@ -2,7 +2,7 @@
   "name": "color-palette-extractor",
   "version": "1.0.0",
   "description": "Extract ",
-  "main": "index.js",
+  "main": "src/js/index.js",
   "type": "module",
   "scripts": {
     "start": "node src/js/index.js",
