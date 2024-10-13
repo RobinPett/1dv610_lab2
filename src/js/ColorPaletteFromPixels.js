@@ -79,9 +79,12 @@ export class ColorPaletteFromPixels {
      */
     #reducePixels(rgbaValues) {
         const reducedPixels = []
+        const skipFactor = Math.ceil(rgbaValues.length / 5000) // Magic number, fix!
 
-        // Skip every 10th pixel
-        for (let i = 0; i < rgbaValues.length; i+=5) {
+        console.log('Skipfactor: ' + skipFactor)
+
+        // Skip based on skipFactor
+        for (let i = 0; i < rgbaValues.length; i+=skipFactor) {
             const pixel = rgbaValues[i]
             reducedPixels.push(pixel)
         }
@@ -219,10 +222,10 @@ export class ColorPaletteFromPixels {
         const [ referenceRed, referenceGreen, referenceBlue, referenceAlpha ] = referencePixel
 
         const powerOfTwo = 2
-        const redCalculation = Math.pow((red - referenceRed), powerOfTwo)
-        const greenCalculation = Math.pow((green - referenceGreen), powerOfTwo)
-        const blueCalculation = Math.pow((blue - referenceBlue), powerOfTwo)
-        const alphaCalculation = Math.pow((alpha - referenceAlpha), powerOfTwo)
+        const redCalculation = (red - referenceRed) **powerOfTwo
+        const greenCalculation = (green - referenceGreen) **powerOfTwo
+        const blueCalculation = (blue - referenceBlue)** powerOfTwo
+        const alphaCalculation = (alpha - referenceAlpha) **powerOfTwo
 
         const distanceCalculation = Math.sqrt((redCalculation + greenCalculation + blueCalculation + alphaCalculation))
 

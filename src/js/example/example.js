@@ -7,6 +7,13 @@ import {ColorPaletteExtractor} from '../index.js'
 const imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 
 const paletteExtractor = new ColorPaletteExtractor()
+
+// Check speed of operation
+let milliseconds = 0
+setInterval(() => {
+milliseconds ++ 
+}, 0);
+
 const image = paletteExtractor.loadImage(imageURL)
 const pixels = await image.getPixels()
 
@@ -20,6 +27,8 @@ const extraxtedPalette = palette.getColorPalette()
 // const mutedPalette = palette.getMutedPalette()
 
 const colorPaletteDiv = paletteExtractor.presentColorPalette(extraxtedPalette, 100)
+
+console.log('Time to calculate: ' + milliseconds + 'ms')
 // const darkPalettedIV = paletteExtractor.presentColorPalette(darkPalette, 100)
 // const brightPaletteDiv = paletteExtractor.presentColorPalette(brightPalette, 100)
 // const mutedPaletteDiv = paletteExtractor.presentColorPalette(mutedPalette, 100)
