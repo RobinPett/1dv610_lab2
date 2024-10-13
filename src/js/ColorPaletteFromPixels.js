@@ -321,6 +321,8 @@ export class ColorPaletteFromPixels {
             console.error('Could not extract any colors from this image')
         }
 
+        // Create new ColorPalette(extractedColors) - Create a new type 
+
         return extractedColors
 
     }
