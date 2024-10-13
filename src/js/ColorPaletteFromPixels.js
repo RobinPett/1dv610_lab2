@@ -81,11 +81,10 @@ export class ColorPaletteFromPixels {
      */
     #reducePixels(rgbaValues) {
         const reducedPixels = []
-        const skipFactor = Math.ceil(rgbaValues.length / 5000) // Magic number, fix!
+        const targetPixelCount = 5000
+        const skipFactor = Math.ceil(rgbaValues.length / targetPixelCount)
 
-        console.log('Skipfactor: ' + skipFactor)
-
-        // Skip based on skipFactor
+        // Skip pixels based on skipFactor
         for (let i = 0; i < rgbaValues.length; i+=skipFactor) {
             const pixel = rgbaValues[i]
             reducedPixels.push(pixel)
@@ -165,13 +164,8 @@ export class ColorPaletteFromPixels {
         // function - Group together pixels
         this.#rgbaValues.forEach((pixel) => {
             let foundSimilarPixel = false
-            const [red, green, blue, alpha] = pixel 
 
-            // Calculate luminance (brightness) and saturation from rgb
-            // Refernce:https://en.wikipedia.org/wiki/Luma_(video)
-            const pixelBrightness = (red * 0.299 + green * 0.587 + blue * 0.114) / 255
-            const pixelSaturation = (Math.max(red, green, blue) - Math.min(red, green, blue)) / 255
-            const pixelValues = { pixelBrightness, pixelSaturation }
+            const pixelValues = this.#getPixelLuminanceAndBrightness(pixel)
             
             if (this.#isPixelBrightAndSaturatedEnough(pixelValues)) {
                 
@@ -195,25 +189,36 @@ export class ColorPaletteFromPixels {
         return sortedFrequentPixels
     }
 
+    /**
+     * Calculate luminance (brightness) and saturation from rgb
+     * Refernce:https://en.wikipedia.org/wiki/Luma_(video)
+     *
+     * @param {Array} pixel 
+     * @returns 
+     */
+    #getPixelLuminanceAndBrightness(pixel) {
+        const [red, green, blue ] = pixel 
+
+        const pixelBrightness = (red * 0.299 + green * 0.587 + blue * 0.114) / 255
+        const pixelSaturation = (Math.max(red, green, blue) - Math.min(red, green, blue)) / 255
+        return { pixelBrightness, pixelSaturation }
+    }
+
     #isPixelBrightAndSaturatedEnough(pixelValues) {
             const {pixelBrightness, pixelSaturation} = pixelValues
-            
-            // Default
-            if (!this.#colorPaletteType) {
-                if (pixelBrightness < 0.4 || pixelSaturation < 0.5) return false
+
+            const paletteConditions = {
+                'default': { brightness: 0, saturation: 0.3 },
+                'bright': { brightness: 0.5, saturation: 0.5 },
+                'dark': { brightness: 0.5 },
+                'muted': { brightness: 0.2, saturationMax: 0.4 }
             }
 
-            if (this.#colorPaletteType === 'bright') {
-                if (pixelBrightness < 0.5 || pixelSaturation < 0.5) return false
-            } 
+            const conditions = paletteConditions[this.#colorPaletteType || 'default']
 
-            if (this.#colorPaletteType === 'dark') {
-                if (pixelBrightness > 0.5) return false
-            } 
-            
-            if (this.#colorPaletteType === 'muted') {
-                if (pixelBrightness < 0.2 || pixelSaturation > 0.4) return false
-            }
+            if (conditions.brightness && pixelBrightness < conditions.brightness) return false
+            if (conditions.saturation && pixelSaturation < conditions.saturation) return false
+            if (conditions.saturationMax && pixelSaturation > conditions.saturationMax) return false
 
             return true // Pixel is bright and saturated enough
     }
