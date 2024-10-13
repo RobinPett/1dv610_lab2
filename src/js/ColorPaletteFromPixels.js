@@ -1,6 +1,8 @@
 /**
  * Extract dominant colors from a set of pixels.
  * Iterates over pixels and sorts into clusters of similar colors. 
+ * Pixels are read as channels of red, green, blue and alpha
+ * https://en.wikipedia.org/wiki/RGBA_color_model
  */
 export class ColorPaletteFromPixels {
     /**
