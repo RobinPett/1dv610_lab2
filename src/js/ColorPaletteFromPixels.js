@@ -84,7 +84,7 @@ export class ColorPaletteFromPixels {
         const targetPixelCount = 5000
         const skipFactor = Math.ceil(rgbaValues.length / targetPixelCount)
 
-        // Skip pixels based on skipFactor
+        // Skip pixels  based on skipFactor
         for (let i = 0; i < rgbaValues.length; i+=skipFactor) {
             const pixel = rgbaValues[i]
             reducedPixels.push(pixel)
