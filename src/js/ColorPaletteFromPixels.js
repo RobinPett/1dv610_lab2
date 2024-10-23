@@ -4,6 +4,14 @@
  * Pixels are read as channels of red, green, blue and alpha
  * https://en.wikipedia.org/wiki/RGBA_color_model
  */
+
+const PALETTE_TYPES = {
+    DEFAULT: 'default',
+    BRIGHT: 'bright',
+    DARK: 'dark',
+    MUTED: 'muted'
+}
+
 export class ColorPaletteFromPixels {
     /**
      * Raw rgba Values.
@@ -60,7 +68,7 @@ export class ColorPaletteFromPixels {
      * Using K-Clustering algorithm to find dominant clusters of similar colors.
      * Reference: https://en.wikipedia.org/wiki/K-means_clustering#Algorithms
      */
-    #findDominantColors() {
+    #extractProminentColors() {
         // Create Color clusters based on amountOfColorsToExtract
         this.#colorClusters = this.#createColorClusters(this.#numberOfColorsToExtract)
 
@@ -71,7 +79,7 @@ export class ColorPaletteFromPixels {
         this.#addToColorCluster()
 
         // Loops over pixels and gets more accurate colors from image
-        this.#iterateOverPixels()
+        this.#refineColorClusters()
     }
 
     /**
@@ -208,13 +216,13 @@ export class ColorPaletteFromPixels {
             const {pixelBrightness, pixelSaturation} = pixelValues
 
             const paletteConditions = {
-                'default': { brightness: 0, saturation: 0.3 },
-                'bright': { brightness: 0.5, saturation: 0.5 },
-                'dark': { brightness: 0.5 },
-                'muted': { brightness: 0.2, saturationMax: 0.4 }
+                [PALETTE_TYPES.DEFAULT]: { brightness: 0, saturation: 0.3 },
+                [PALETTE_TYPES.BRIGHT]: { brightness: 0.5, saturation: 0.5 },
+                [PALETTE_TYPES.DARK]: { brightness: 0.5 },
+                [PALETTE_TYPES.MUTED]: { brightness: 0.2, saturationMax: 0.4 }
             }
 
-            const conditions = paletteConditions[this.#colorPaletteType || 'default']
+            const conditions = paletteConditions[this.#colorPaletteType || PALETTE_TYPES.DEFAULT]
 
             if (conditions.brightness && pixelBrightness < conditions.brightness) return false
             if (conditions.saturation && pixelSaturation < conditions.saturation) return false
@@ -272,7 +280,7 @@ export class ColorPaletteFromPixels {
         return updatedReferencePixels
     }
 
-    #iterateOverPixels() {
+    #refineColorClusters() {
         let convergence = false
         let iterations = 0
         const maxIterations = 100
@@ -314,7 +322,7 @@ export class ColorPaletteFromPixels {
      * [ {red, green, blue, alpha } ]
      */
     getColorPalette() {
-        this.#findDominantColors()
+        this.#extractProminentColors()
 
         const extractedColors = []
 
@@ -338,12 +346,19 @@ export class ColorPaletteFromPixels {
     }
 
    /**
+     * Returns an array of prominent colors as objects:
+     * [ {red, green, blue, alpha } ]
+    */
+    getPalette() {
+        this.#colorPaletteType = PALETTE_TYPES.DEFAULT
+    }
+
+   /**
      * Returns an array of muted colors as objects:
      * [ {red, green, blue, alpha } ]
-    * 
     */
     getMutedPalette() {
-        this.#colorPaletteType = 'muted'
+        this.#colorPaletteType = PALETTE_TYPES.MUTED
         return this.getColorPalette()
     }
 
@@ -352,7 +367,7 @@ export class ColorPaletteFromPixels {
      * [ {red, green, blue, alpha } ]
      */
     getDarkPalette() {
-        this.#colorPaletteType = 'dark'
+        this.#colorPaletteType = PALETTE_TYPES.DARK
         return this.getColorPalette()
     }
 
@@ -361,7 +376,7 @@ export class ColorPaletteFromPixels {
      * [ {red, green, blue, alpha } ]
      */
     getBrightPalette() {
-        this.#colorPaletteType = 'bright'
+        this.#colorPaletteType = PALETTE_TYPES.BRIGHT
         return this.getColorPalette()
     }
 
