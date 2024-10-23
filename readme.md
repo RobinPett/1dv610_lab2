@@ -27,6 +27,8 @@ Extracts color palettes from images to be used in a browser environment.
   // Specify pixel data and number of colors
   const palette = paletteExtractor.startExtraction(pixels, 10)
 
+  // Returns array of objects
+  // [ {red green blue} ]
   const extraxtedPalette = palette.getColorPalette()
 ```
 To get diffent palettes you can use:
