@@ -54,7 +54,6 @@ body.append(paletteDiv)
 ![example](.readme/example.PNG)
 
 ## Known issues
-- Generating palettes can be slow - optimizing needed
 - Image links can fail if the server has origin controll
 
 ## Upcoming Features
