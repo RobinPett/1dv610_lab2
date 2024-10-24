@@ -1,40 +1,14 @@
 export class ImageToPixels {
-    /**
-     * Image to be loaded.
-     */
     #imageURL
-
-    /**
-     * Image to be loaded.
-     */
     #imageWidthInPx
-
-    /**
-     * Image to be loaded.
-     */
     #imageHeightInPx
-
-    /**
-     * Image to be loaded.
-     */
     #imageElement
 
-    /**
-     * Image to be loaded.
-     */
     #canvasElement
 
-    /**
-     * Raw rgba values in an 8Bit array
-     */
-    #rgbaValues
+    #pixels
 
-    /**
-     * A promise to see if image has loaded
-     */
     #imageLoadPromise
-
-
 
     constructor (imageUrl) {
         this.#imageURL = imageUrl
@@ -45,9 +19,9 @@ export class ImageToPixels {
         this.#imageElement = await this._createImage(this.#imageURL)
         this.#imageWidthInPx = this.#imageElement.width
         this.#imageHeightInPx = this.#imageElement.height
-
+        
         this.#canvasElement = this._createCanvasElement(this.#imageElement)
-        this.#rgbaValues = this.#extractRgbaValues(this.#canvasElement)
+        this.#pixels = this.#extractPixels(this.#canvasElement)
     }
 
     /**
@@ -86,7 +60,7 @@ export class ImageToPixels {
      *
      * @param {CanvasRenderingContext2D} context 
      */
-    async #extractRgbaValues(context) {
+    async #extractPixels(context) {
         const imageData = context.getImageData(0, 0, this.#imageWidthInPx, this.#imageHeightInPx)
         const data = imageData.data
         const extractedRgbaValues = []
@@ -113,7 +87,7 @@ export class ImageToPixels {
      */
     async getPixels() {
         await this.#imageLoadPromise
-        return await this.#rgbaValues
+        return await this.#pixels
     }
 
     /**
