@@ -214,23 +214,23 @@ export class ColorPaletteFromPixels {
     }
 
     #isPixelBrightAndSaturatedEnough(pixelValues) {
-            const {pixelBrightness, pixelSaturation} = pixelValues
+        const {pixelBrightness, pixelSaturation} = pixelValues
 
-            const paletteConditions = {
-                [PALETTE_TYPES.DEFAULT]: { brightness: 0, saturation: 0.3 },
-                [PALETTE_TYPES.BRIGHT]: { brightness: 0.5, saturation: 0.5 },
-                [PALETTE_TYPES.DARK]: { brightnessMax: 0.4, saturation: 0.1 },
-                [PALETTE_TYPES.MUTED]: { brightness: 0.2, saturationMax: 0.4 }
-            }
+        const paletteConditions = {
+            [PALETTE_TYPES.DEFAULT]: { brightness: 0, saturation: 0.3 },
+            [PALETTE_TYPES.BRIGHT]: { brightness: 0.5, saturation: 0.5 },
+            [PALETTE_TYPES.DARK]: { brightnessMax: 0.4, saturation: 0.1 },
+            [PALETTE_TYPES.MUTED]: { brightness: 0.2, saturationMax: 0.4 }
+        }
 
-            const conditions = paletteConditions[this.#colorPaletteType || PALETTE_TYPES.DEFAULT]
+        const conditions = paletteConditions[this.#colorPaletteType || PALETTE_TYPES.DEFAULT]
 
-            if (pixelBrightness < conditions.brightness) return false
-            if (pixelBrightness > conditions.brightnessMax) return false
-            if (pixelSaturation < conditions.saturation) return false
-            if (pixelSaturation > conditions.saturationMax) return false
+        if (pixelBrightness < conditions.brightness) return false
+        if (pixelBrightness > conditions.brightnessMax) return false
+        if (pixelSaturation < conditions.saturation) return false
+        if (pixelSaturation > conditions.saturationMax) return false
 
-            return true // Pixel is bright and saturated enough
+        return true // Pixel is bright and saturated enough
     }
 
     #calculateDistanceToReferencePixel(pixel, referencePixel) {
@@ -345,7 +345,7 @@ export class ColorPaletteFromPixels {
 
     }
 
-   /**
+    /**
      * Returns an array of prominent colors as objects:
      * [ {red, green, blue, alpha } ]
     */
@@ -354,7 +354,7 @@ export class ColorPaletteFromPixels {
         return this.#getColorPalette()
     }
 
-   /**
+    /**
      * Returns an array of muted colors as objects:
      * [ {red, green, blue, alpha } ]
     */

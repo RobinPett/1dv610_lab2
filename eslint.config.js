@@ -6,7 +6,8 @@ export default [
     {
         rules: {
             'no-unused-vars': 'warn',
-            'no-undef': 'warn'
+            'no-undef': 'warn',
+            'indent': ['error', 4]
         }
     }
 ]
