@@ -2,7 +2,7 @@
 
 ## Version 1.0.0
 - Initial release.
-- Basic color extracttion functionality
+- Basic color extraction functionality
 
 ## Version 2.0.0
 - Updated public API - getPalette().
