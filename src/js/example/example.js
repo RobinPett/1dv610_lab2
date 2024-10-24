@@ -4,7 +4,8 @@
 
 import {ColorPaletteExtractor} from '../index.js'
 
-const imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
+let imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
+imageURL = 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Red-green-blue_flag.svg'
 
 const paletteExtractor = new ColorPaletteExtractor()
 

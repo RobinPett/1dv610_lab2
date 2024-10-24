@@ -19,10 +19,9 @@ export class ColorPaletteFromPixels {
      */
     #pixels
 
-    /**
-     * How many colors should be extracted from rgba values.
-     */
     #numberOfColorsToExtract
+
+    #originalPaletteLength
 
     /**
      * Pixel to reference for clusters
@@ -38,6 +37,11 @@ export class ColorPaletteFromPixels {
      * Default, Bright, Dark, Muted
      */
     #colorPaletteType
+
+    /**
+     * Holds number of missing colors in a complete palette
+     */
+    #numberOfMissingColors
     
 
     constructor(rgbaValues, numberOfColorsToExtract) {
@@ -50,6 +54,7 @@ export class ColorPaletteFromPixels {
             throw new Error('A palette must be between 1 and 10 colors')
         } else {
             this.#numberOfColorsToExtract = numberOfColorsToExtract
+            this.#originalPaletteLength = numberOfColorsToExtract
         }
     }
 
@@ -77,7 +82,7 @@ export class ColorPaletteFromPixels {
         // Cluster together pixel to reference pixels
         this.#addToColorCluster()
 
-        // Loops over pixels and gets more accurate colors
+        // Loop over pixels to get more accurate colors
         this.#refineColorClusters()
     }
 
@@ -145,6 +150,7 @@ export class ColorPaletteFromPixels {
         const frequentPixels = this.getFrequentPixels()
 
         if (frequentPixels.length < this.#numberOfColorsToExtract) {
+            this.#numberOfMissingColors = this.#numberOfColorsToExtract - frequentPixels.length
             this.#numberOfColorsToExtract = frequentPixels.length
 
             this.#clearClusters()
@@ -325,12 +331,21 @@ export class ColorPaletteFromPixels {
     }
 
     #getColorPalette() {
+        this.#numberOfColorsToExtract = this.#originalPaletteLength
         this.#extractProminentColors()
 
         const colors = this.#getExtractedColors()
 
         if (colors.length === 0) {
             throw new Error('Could not extract any colors from this image')
+        }
+
+        if (this.#numberOfMissingColors) {
+            const lastColor = colors[colors.length - 1]
+
+            for (let i = 0; i < this.#numberOfMissingColors; i++) {
+                colors.push(lastColor)
+            }
         }
 
         return colors
