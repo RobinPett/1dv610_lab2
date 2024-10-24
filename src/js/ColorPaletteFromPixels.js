@@ -172,7 +172,6 @@ export class ColorPaletteFromPixels {
             if (!foundSimilarPixel) {
                 frequentPixels.push({ pixel: pixel, count: 1 })
             }
-
         })
 
         return this.#sortPixels(frequentPixels) 
@@ -286,7 +285,6 @@ export class ColorPaletteFromPixels {
         const alphaMean = Math.max(0, Math.min(255, alphaSum / clusterLength))
 
         return { redMean, greenMean, blueMean, alphaMean }
-
     }
 
     #refineColorClusters() {
@@ -336,7 +334,6 @@ export class ColorPaletteFromPixels {
         }
 
         return colors
-
     }
 
     #getExtractedColors() {

@@ -19,7 +19,7 @@ export class ImageToPixels {
         this.#imageElement = await this._createImage(this.#imageURL)
         this.#imageWidthInPx = this.#imageElement.width
         this.#imageHeightInPx = this.#imageElement.height
-        
+
         this.#canvasElement = this._createCanvasElement(this.#imageElement)
         this.#pixels = this.#extractPixels(this.#canvasElement)
     }
@@ -91,8 +91,6 @@ export class ImageToPixels {
     }
 
     /**
-     * Gets image width in px.
-     * 
      * @returns {number} - Width in px.
      */
     async getWidthInPx() {
@@ -101,8 +99,6 @@ export class ImageToPixels {
     }
 
     /**
-     * Gets image height in pixels.
-     * 
      * @returns {number} - Height in px.
      */
     async getHeightInPx() {
