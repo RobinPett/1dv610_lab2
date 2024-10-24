@@ -14,8 +14,8 @@ describe('ColorPaletteFromPixels class test', () => {
     test('Reduce large image', () => {
         const colorPaletteFromPixels = new ColorPaletteFromPixels(largeTestImage, numberOfColorsToExtract)
         const extractedColors = colorPaletteFromPixels.getPalette()
-        const rgbaValues = colorPaletteFromPixels.getRgbaValues()
-        expect(largeTestImage.length).toBeGreaterThan(rgbaValues.length)
+        const pixels = colorPaletteFromPixels.getPixels()
+        expect(largeTestImage.length).toBeGreaterThan(pixels.length)
     })
 
     test('Get 3 dominant colors from pixel data', () => {
