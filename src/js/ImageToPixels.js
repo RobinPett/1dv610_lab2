@@ -42,18 +42,18 @@ export class ImageToPixels {
     }
 
     async #startImageExtraction() {
-        this.#imageElement = await this.createImage(this.#imageURL)
+        this.#imageElement = await this._createImage(this.#imageURL)
         this.#imageWidthInPx = this.#imageElement.width
         this.#imageHeightInPx = this.#imageElement.height
 
-        this.#canvasElement = this.createCanvasElement(this.#imageElement)
+        this.#canvasElement = this._createCanvasElement(this.#imageElement)
         this.#rgbaValues = this.#extractRgbaValues(this.#canvasElement)
     }
 
     /**
      * Create an image element based on image url.
      */
-    createImage() {
+    _createImage() {
         return new Promise((resolve, reject) => {
             let imageElement = document.createElement('img')
             this.#imageElement = imageElement
@@ -72,7 +72,7 @@ export class ImageToPixels {
         })
     }
 
-    createCanvasElement(imageElement) {
+    _createCanvasElement(imageElement) {
         const canvas = document.createElement('canvas')
         canvas.width = this.#imageWidthInPx
         canvas.height = this.#imageHeightInPx

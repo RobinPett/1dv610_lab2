@@ -21,15 +21,15 @@ const pixels = await image.getPixels()
 const palette = paletteExtractor.startExtraction(pixels, 5)
 
 // Get seperate color palettes
-const extraxtedPalette = palette.getColorPalette()
-// const darkPalette = palette.getDarkPalette()
+const extraxtedPalette = palette.getPalette()
+const darkPalette = palette.getDarkPalette()
 // const brightPalette = palette.getBrightPalette()
 // const mutedPalette = palette.getMutedPalette()
+const newDefault = palette.getPalette()
 
 const colorPaletteDiv = paletteExtractor.presentColorPalette(extraxtedPalette, 100)
-
-console.log('Time to calculate: ' + milliseconds + 'ms')
-// const darkPalettedIV = paletteExtractor.presentColorPalette(darkPalette, 100)
+const colorPaletteDiv2 = paletteExtractor.presentColorPalette(newDefault, 100)
+const darkPalettedDiv = paletteExtractor.presentColorPalette(darkPalette, 100)
 // const brightPaletteDiv = paletteExtractor.presentColorPalette(brightPalette, 100)
 // const mutedPaletteDiv = paletteExtractor.presentColorPalette(mutedPalette, 100)
 
@@ -41,3 +41,5 @@ imageElement.src = imageURL
 const body = document.querySelector('body')
 body.append(imageElement)
 body.append(colorPaletteDiv)
+body.append(darkPalettedDiv)
+body.append(colorPaletteDiv2)

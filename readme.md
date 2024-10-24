@@ -32,7 +32,7 @@ THis module is supposed to work in a browser environment with DOM access.
 
   // Returns array of objects
   // [ {red green blue} ]
-  const extraxtedPalette = palette.getColorPalette()
+  const extraxtedPalette = palette.getPalette()
 ```
 To get diffent palettes you can use:
 

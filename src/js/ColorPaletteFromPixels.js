@@ -1,7 +1,7 @@
 /**
- * Extract dominant colors from a set of pixels.
+ * Extract prominent colors from a set of pixels.
  * Iterates over pixels and sorts into clusters of similar colors. 
- * Pixels are read as channels of red, green, blue and alpha
+ * Pixels are read as values of red, green, blue and alpha
  * https://en.wikipedia.org/wiki/RGBA_color_model
  */
 
@@ -14,9 +14,10 @@ const PALETTE_TYPES = {
 
 export class ColorPaletteFromPixels {
     /**
-     * Raw rgba Values.
+     * Pixels representing RGBA values
+     * [red, green, blue, alpha]
      */
-    #rgbaValues
+    #pixels
 
     /**
      * How many colors should be extracted from rgba values.
@@ -24,17 +25,17 @@ export class ColorPaletteFromPixels {
     #numberOfColorsToExtract
 
     /**
-     * How many colors should be extracted from rgba values.
+     * Pixel to reference for clusters
      */
     #referencePixels
 
     /**
-     * Color cluster - Collection of similar pixels
+     * Collection of similar pixels
      */
     #colorClusters
 
     /**
-     * Type of palette - Bright, Dark, Muted
+     * Default, Bright, Dark, Muted
      */
     #colorPaletteType
     
@@ -58,9 +59,9 @@ export class ColorPaletteFromPixels {
         }
 
         if (rgbaValues.length > 100000) {
-            this.#rgbaValues = this.#reducePixels(rgbaValues)
+            this.#pixels = this.#reducePixels(rgbaValues)
         } else {
-            this.#rgbaValues = rgbaValues
+            this.#pixels = rgbaValues
         }
     }
 
@@ -115,8 +116,8 @@ export class ColorPaletteFromPixels {
     }
 
     #addToColorCluster() {
-        for (let i = 0; i < this.#rgbaValues.length; i++) {
-            const pixel = this.#rgbaValues[i] // A Pixel is an array of rgba values - [r, g, b, a]
+        for (let i = 0; i < this.#pixels.length; i++) {
+            const pixel = this.#pixels[i] // A Pixel is an array of rgba values - [r, g, b, a]
             const meassuredDistances = []
             const threshold = 30
 
@@ -148,29 +149,29 @@ export class ColorPaletteFromPixels {
         const referencePixels = []
 
         // Get most frequent colors
-        const colorFrequencies = this.#getColorFrequencies()
+        const frequentColors = this.#getFrequentColors()
 
-        if (colorFrequencies.length < this.#numberOfColorsToExtract) {
-            this.#numberOfColorsToExtract = colorFrequencies.length
+        if (frequentColors.length < this.#numberOfColorsToExtract) {
+            this.#numberOfColorsToExtract = frequentColors.length
 
             this.#clearClusters()
             this.#colorClusters = this.#createColorClusters()
         }
 
-        // Extract most frequent colors as initial 
+        // Extract most frequent colors as initial reference
         for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
-            referencePixels.push(colorFrequencies[i].pixel)
+            referencePixels.push(frequentColors[i].pixel)
         }
 
         return referencePixels
     }
 
-    #getColorFrequencies() {
+    #getFrequentColors() {
         const frequentPixels = []
         const threshold = 50
 
         // function - Group together pixels
-        this.#rgbaValues.forEach((pixel) => {
+        this.#pixels.forEach((pixel) => {
             let foundSimilarPixel = false
 
             const pixelValues = this.#getPixelLuminanceAndBrightness(pixel)
@@ -218,15 +219,16 @@ export class ColorPaletteFromPixels {
             const paletteConditions = {
                 [PALETTE_TYPES.DEFAULT]: { brightness: 0, saturation: 0.3 },
                 [PALETTE_TYPES.BRIGHT]: { brightness: 0.5, saturation: 0.5 },
-                [PALETTE_TYPES.DARK]: { brightness: 0.5 },
+                [PALETTE_TYPES.DARK]: { brightnessMax: 0.4, saturation: 0.1 },
                 [PALETTE_TYPES.MUTED]: { brightness: 0.2, saturationMax: 0.4 }
             }
 
             const conditions = paletteConditions[this.#colorPaletteType || PALETTE_TYPES.DEFAULT]
 
-            if (conditions.brightness && pixelBrightness < conditions.brightness) return false
-            if (conditions.saturation && pixelSaturation < conditions.saturation) return false
-            if (conditions.saturationMax && pixelSaturation > conditions.saturationMax) return false
+            if (pixelBrightness < conditions.brightness) return false
+            if (pixelBrightness > conditions.brightnessMax) return false
+            if (pixelSaturation < conditions.saturation) return false
+            if (pixelSaturation > conditions.saturationMax) return false
 
             return true // Pixel is bright and saturated enough
     }
@@ -321,7 +323,7 @@ export class ColorPaletteFromPixels {
      * Returns an array of colors as objects:
      * [ {red, green, blue, alpha } ]
      */
-    getColorPalette() {
+    #getColorPalette() {
         this.#extractProminentColors()
 
         const extractedColors = []
@@ -336,10 +338,8 @@ export class ColorPaletteFromPixels {
         }
 
         if (extractedColors.length === 0) {
-            console.error('Could not extract any colors from this image')
+            throw new Error('Could not extract any colors from this image') // TODO Throw error
         }
-
-        // Create new ColorPalette(extractedColors) - Create a new type 
 
         return extractedColors
 
@@ -351,6 +351,7 @@ export class ColorPaletteFromPixels {
     */
     getPalette() {
         this.#colorPaletteType = PALETTE_TYPES.DEFAULT
+        return this.#getColorPalette()
     }
 
    /**
@@ -359,7 +360,7 @@ export class ColorPaletteFromPixels {
     */
     getMutedPalette() {
         this.#colorPaletteType = PALETTE_TYPES.MUTED
-        return this.getColorPalette()
+        return this.#getColorPalette()
     }
 
     /**
@@ -368,7 +369,7 @@ export class ColorPaletteFromPixels {
      */
     getDarkPalette() {
         this.#colorPaletteType = PALETTE_TYPES.DARK
-        return this.getColorPalette()
+        return this.#getColorPalette()
     }
 
     /**
@@ -377,7 +378,7 @@ export class ColorPaletteFromPixels {
      */
     getBrightPalette() {
         this.#colorPaletteType = PALETTE_TYPES.BRIGHT
-        return this.getColorPalette()
+        return this.#getColorPalette()
     }
 
     /**
@@ -385,6 +386,6 @@ export class ColorPaletteFromPixels {
      * [ [ red, green, blue, alpha ] ]
      */
     getRgbaValues() {
-        return this.#rgbaValues
+        return this.#pixels
     }
 }
