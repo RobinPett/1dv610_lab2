@@ -141,6 +141,14 @@ export class ColorPaletteFromPixels {
         })
     }
 
+    #createNewClusters(frequentPixels) {
+        this.#numberOfMissingColors = this.#numberOfColorsToExtract - frequentPixels.length
+        this.#numberOfColorsToExtract = frequentPixels.length
+
+        this.#clearClusters()
+        this.#colorClusters = this.#createColorClusters()
+    }
+
     #refineColorClusters() {
         let convergence = false
         let iterations = 0
@@ -160,30 +168,8 @@ export class ColorPaletteFromPixels {
         } while (!convergence && iterations < maxIterations)
     }
 
-    #getDistancesBetweenPixelAndReferences(pixel) {
-        return this.#referencePixels.map(referencePixel => 
-            this.#calculateDistanceToReferencePixel(pixel, referencePixel)
-        )
-    }
-
     #clearClusters() {
         this.#colorClusters.forEach(cluster => cluster.length = 0 ) 
-    }
-
-    #createNewClusters(frequentPixels) {
-        this.#numberOfMissingColors = this.#numberOfColorsToExtract - frequentPixels.length
-        this.#numberOfColorsToExtract = frequentPixels.length
-
-        this.#clearClusters()
-        this.#colorClusters = this.#createColorClusters()
-    }
-
-    #createReferencePixels(frequentPixels) {
-        const referencePixels = []
-        for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
-            referencePixels.push(frequentPixels[i].pixel)
-        }
-        return referencePixels
     }
 
     #getFrequentPixels() {
@@ -202,6 +188,20 @@ export class ColorPaletteFromPixels {
         })
 
         return this.#sortPixels(frequentPixels) 
+    }
+
+    #createReferencePixels(frequentPixels) {
+        const referencePixels = []
+        for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
+            referencePixels.push(frequentPixels[i].pixel)
+        }
+        return referencePixels
+    }
+
+    #getDistancesBetweenPixelAndReferences(pixel) {
+        return this.#referencePixels.map(referencePixel => 
+            this.#calculateDistanceToReferencePixel(pixel, referencePixel)
+        )
     }
 
     #sortPixels(frequentPixels) {
@@ -223,6 +223,36 @@ export class ColorPaletteFromPixels {
         })
 
         return foundSimilarPixel
+    }
+
+    #calculateDistanceToReferencePixel(pixel, referencePixel) {
+        const [ red, green, blue, alpha ] = pixel
+        const [ referenceRed, referenceGreen, referenceBlue, referenceAlpha ] = referencePixel
+
+        const powerOfTwo = 2
+        const redCalculation = (red - referenceRed) **powerOfTwo
+        const greenCalculation = (green - referenceGreen) **powerOfTwo
+        const blueCalculation = (blue - referenceBlue)** powerOfTwo
+        const alphaCalculation = (alpha - referenceAlpha) **powerOfTwo
+
+        const distanceCalculation = Math.sqrt((redCalculation + greenCalculation + blueCalculation + alphaCalculation))
+
+        return distanceCalculation
+    }
+
+    #getUpdatedReferencePixels() {
+        const updatedReferencePixels = []
+
+        this.#colorClusters.forEach(colorCluster => {
+            const clusterLength = colorCluster.length
+
+            const rgbaSums = this.#calculateRgbaSums(colorCluster)
+            const { redMean, greenMean, blueMean, alphaMean } = this.#calculateRgbaMeans(rgbaSums, clusterLength)
+            const newReferencePixel = [redMean, greenMean, blueMean, alphaMean]
+            updatedReferencePixels.push(newReferencePixel)
+        })
+
+        return updatedReferencePixels
     }
 
     /**
@@ -258,36 +288,6 @@ export class ColorPaletteFromPixels {
         if (pixelSaturation > conditions.saturationMax) return false
 
         return true // Pixel is bright and saturated enough
-    }
-
-    #calculateDistanceToReferencePixel(pixel, referencePixel) {
-        const [ red, green, blue, alpha ] = pixel
-        const [ referenceRed, referenceGreen, referenceBlue, referenceAlpha ] = referencePixel
-
-        const powerOfTwo = 2
-        const redCalculation = (red - referenceRed) **powerOfTwo
-        const greenCalculation = (green - referenceGreen) **powerOfTwo
-        const blueCalculation = (blue - referenceBlue)** powerOfTwo
-        const alphaCalculation = (alpha - referenceAlpha) **powerOfTwo
-
-        const distanceCalculation = Math.sqrt((redCalculation + greenCalculation + blueCalculation + alphaCalculation))
-
-        return distanceCalculation
-    }
-
-    #getUpdatedReferencePixels() {
-        const updatedReferencePixels = []
-
-        this.#colorClusters.forEach(colorCluster => {
-            const clusterLength = colorCluster.length
-
-            const rgbaSums = this.#calculateRgbaSums(colorCluster)
-            const { redMean, greenMean, blueMean, alphaMean } = this.#calculateRgbaMeans(rgbaSums, clusterLength)
-            const newReferencePixel = [redMean, greenMean, blueMean, alphaMean]
-            updatedReferencePixels.push(newReferencePixel)
-        })
-
-        return updatedReferencePixels
     }
 
     #calculateRgbaSums(colorCluster) {
@@ -393,7 +393,7 @@ export class ColorPaletteFromPixels {
     }
 
     /**
-     * Returns an array of RGBA values from image
+     * Returns an array of pixels with rgba values
      * [ [ red, green, blue, alpha ] ]
      */
     getPixels() {
