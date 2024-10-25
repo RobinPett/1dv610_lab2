@@ -1,5 +1,0 @@
-class ColorPalette {
-    constructor(parameters) {
-        
-    }
-}
