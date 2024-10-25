@@ -20,7 +20,6 @@ export class ColorPaletteFromPixels {
     #pixels
 
     #numberOfColorsToExtract
-
     #originalPaletteLength
 
     /**
@@ -343,14 +342,13 @@ export class ColorPaletteFromPixels {
                 colors.push(lastColor)
             }
         }
-
         return colors
     }
 
     #getExtractedColors() {
-        return this.#colorClusters.map((cluster, index) => {
-            const color = cluster[index]
-            const [red, green, blue, alpha] = color
+        return this.#colorClusters.map((cluster) => {
+            const topColor = cluster[0]
+            const [red, green, blue, alpha] = topColor
             return { red, green, blue, alpha }
         })
     }
