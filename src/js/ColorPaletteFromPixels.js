@@ -12,6 +12,9 @@ const PALETTE_TYPES = {
     MUTED: 'muted'
 }
 
+/**
+ * Clumps similar pixels together to create color palettes.
+ */
 export class ColorPaletteFromPixels {
     /**
      * Array of pixels - Representing RGBA values
