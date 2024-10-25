@@ -71,22 +71,6 @@ export class ColorPaletteFromPixels {
     }
 
     /**
-     * Using K-Clustering algorithm to find prominent clusters of similar colors.
-     * Reference: https://en.wikipedia.org/wiki/K-means_clustering#Algorithms
-     */
-    #extractProminentColors() {
-        this.#colorClusters = this.#createColorClusters(this.#numberOfColorsToExtract)
-
-        this.#referencePixels = this.#getInitialReferencePixels()
-
-        // Cluster together pixel to reference pixels
-        this.#addToColorCluster()
-
-        // Loop over pixels to get more accurate colors
-        this.#refineColorClusters()
-    }
-
-    /**
      * Reduce amount of pixels for efficiency.
      * @param {Array} pixels 
      * @returns {Array} - Reduced pixels
@@ -106,6 +90,20 @@ export class ColorPaletteFromPixels {
     }
 
     /**
+     * Using K-Clustering algorithm to create clusters of similar colored pixels.
+     * Reference: https://en.wikipedia.org/wiki/K-means_clustering#Algorithms
+     */
+    #extractProminentColors() {
+        this.#colorClusters = this.#createColorClusters()
+
+        this.#referencePixels = this.#getInitialReferencePixels()
+
+        this.#addPixelsToCluster()
+
+        this.#refineColorClusters()
+    }
+
+    /**
      * Creates an empty cluster (array) for each color to extract.
      */
     #createColorClusters() {
@@ -117,7 +115,17 @@ export class ColorPaletteFromPixels {
         return colorClustersCollection
     }
 
-    #addToColorCluster() {
+    #getInitialReferencePixels() {
+        const frequentPixels = this.#getFrequentPixels()
+
+        if (frequentPixels.length < this.#numberOfColorsToExtract) {
+            this.#createNewClusters(frequentPixels)
+        }
+
+        return this.#createReferencePixels(frequentPixels)
+    }
+
+    #addPixelsToCluster() {
         this.#pixels.forEach((pixel) => {
             const threshold = 30
             const meassuredDistances = this.#getDistancesBetweenPixelAndReferences(pixel)
@@ -128,8 +136,26 @@ export class ColorPaletteFromPixels {
             if (minDistance < threshold) {
                 this.#colorClusters[closestIndex].push(pixel)
             }
-
         })
+    }
+
+    #refineColorClusters() {
+        let convergence = false
+        let iterations = 0
+        const maxIterations = 100
+        
+        do {
+            iterations++
+            const updatedReferencePixels = this.#getUpdatedReferencePixels()
+
+            // Check if pixels don't change no more - Convergence
+            convergence = this.#checkConvergence(updatedReferencePixels, this.#referencePixels)
+            this.#referencePixels = updatedReferencePixels
+
+            this.#clearClusters()
+            this.#colorClusters = this.#createColorClusters()
+            this.#addPixelsToCluster()
+        } while (!convergence && iterations < maxIterations)
     }
 
     #getDistancesBetweenPixelAndReferences(pixel) {
@@ -139,33 +165,26 @@ export class ColorPaletteFromPixels {
     }
 
     #clearClusters() {
-        this.#colorClusters.forEach(cluster => {
-            cluster.length = 0
-        })
+        this.#colorClusters.forEach(cluster => cluster.length = 0 ) 
     }
 
-    #getInitialReferencePixels() {
+    #createNewClusters(frequentPixels) {
+        this.#numberOfMissingColors = this.#numberOfColorsToExtract - frequentPixels.length
+        this.#numberOfColorsToExtract = frequentPixels.length
+
+        this.#clearClusters()
+        this.#colorClusters = this.#createColorClusters()
+    }
+
+    #createReferencePixels(frequentPixels) {
         const referencePixels = []
-
-        const frequentPixels = this.getFrequentPixels()
-
-        if (frequentPixels.length < this.#numberOfColorsToExtract) {
-            this.#numberOfMissingColors = this.#numberOfColorsToExtract - frequentPixels.length
-            this.#numberOfColorsToExtract = frequentPixels.length
-
-            this.#clearClusters()
-            this.#colorClusters = this.#createColorClusters()
-        }
-
-        // Extract most frequent colors as initial reference
         for (let i = 0; i < this.#numberOfColorsToExtract; i++) {
             referencePixels.push(frequentPixels[i].pixel)
         }
-
         return referencePixels
     }
 
-    getFrequentPixels() {
+    #getFrequentPixels() {
         const frequentPixels = []
 
         this.#pixels.forEach((pixel) => {
@@ -291,30 +310,6 @@ export class ColorPaletteFromPixels {
         const alphaMean = Math.max(0, Math.min(255, alphaSum / clusterLength))
 
         return { redMean, greenMean, blueMean, alphaMean }
-    }
-
-    #refineColorClusters() {
-        let convergence = false
-        let iterations = 0
-        const maxIterations = 100
-        
-        do {
-            iterations++
-            const updatedReferencePixels = this.#getUpdatedReferencePixels()
-
-            // Check if pixels don't change no more - Convergence
-            convergence = this.#checkConvergence(updatedReferencePixels, this.#referencePixels)
-
-            this.#referencePixels = updatedReferencePixels
-
-            this.#clearClusters()
-
-            // Create Color clusters based on amountOfColorsToExtract
-            this.#colorClusters = this.#createColorClusters()
-
-            // Cluster together pixel to reference pixels
-            this.#addToColorCluster()
-        } while (!convergence && iterations < maxIterations)
     }
 
     #checkConvergence(updatedReferencePixels, referencePixels) {
