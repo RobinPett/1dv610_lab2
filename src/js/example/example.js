@@ -4,8 +4,7 @@
 
 import {ColorPaletteExtractor} from '../index.js'
 
-let imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
-imageURL = 'https://i.ibb.co/FWBSDtD/pexels-dzemal-2352335-28717994.jpg'
+const imageURL = 'https://cdn.konst.se/konstverk/800/2501830840652.jpg'
 
 const paletteExtractor = new ColorPaletteExtractor()
 
